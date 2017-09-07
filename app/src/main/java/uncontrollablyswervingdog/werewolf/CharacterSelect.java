@@ -8,12 +8,18 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CharacterSelect extends AppCompatActivity {
 
+public class CharacterSelect extends AppCompatActivity
+{
+    String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_select);
+    }
+    void generateStuff()
+    {
 
     }
 }
