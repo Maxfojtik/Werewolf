@@ -36,13 +36,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        doneButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, CharacterSelect.class);
-//                startActivity(intent);
-//            }
-//        });
     }
 
     public void doneButton(View v) {
