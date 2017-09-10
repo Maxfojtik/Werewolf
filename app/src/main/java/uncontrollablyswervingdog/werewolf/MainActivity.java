@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.content.Intent;
-import android.widget.TextView;
+import android.view.View.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,17 +28,36 @@ public class MainActivity extends AppCompatActivity {
         doneButton = (Button) findViewById(R.id.done_button);
         delete1 = (Button) findViewById(R.id.delete_button);
 
+        try {
+            addNameField();addNameField();addNameField();
+        } catch (Exception e){}
+
         newButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                try {
-                    addNameField();
-                } catch(Exception e) {
-
-                }
+            try {
+                addNameField();
+            } catch(Exception e) {}
             }
         });
-
     }
+
+    private OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            View linearLayout =  findViewById(R.id.mainMenu);
+            ((RelativeLayout) linearLayout).removeView(findViewById((v.getId()-10)));
+            ((RelativeLayout) linearLayout).removeView(findViewById((v.getId())));
+            RelativeLayout.LayoutParams nextEditTextParams = (RelativeLayout.LayoutParams) findViewById(v.getId()-9).getLayoutParams();
+            nextEditTextParams.addRule(RelativeLayout.BELOW, v.getId()-11);
+            for (int i=v.getId()-9;i<numEditTexts;i++) {
+                findViewById(i).setId(i-1);
+                RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) findViewById(i).getLayoutParams();
+                delButtonParams.addRule(RelativeLayout.ALIGN_TOP, i+10);
+            }
+            numEditTexts--;
+
+        }
+    };
 
     public void doneButton(View v) {
         Intent intent = new Intent(MainActivity.this, CharacterSelect.class);
@@ -52,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         EditText newNameBox = new EditText(this);
         newNameBox.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         newNameBox.setText("");
-        newNameBox.setHint("Name");
+        newNameBox.setHint(String.valueOf(numEditTexts));
         newNameBox.setEms(12);
         newNameBox.setMaxLines(1);
         newNameBox.setSingleLine(true);
-        newNameBox.setId(0+numEditTexts); // Not an error, the red lines just note that this isn't the usual way to do things
+        newNameBox.setId(0+numEditTexts);
         newNameBox.requestFocus();
         ((RelativeLayout) linearLayout).addView(newNameBox);
         // Adjust position for the new textEdit
@@ -75,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             delButton.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             delButton.setText("-");
             delButton.setId((10+numEditTexts));
+            delButton.setOnClickListener(onClickListener);
 
             RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) delButton.getLayoutParams();
             delButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
