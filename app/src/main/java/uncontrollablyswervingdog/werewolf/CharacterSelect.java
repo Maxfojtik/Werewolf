@@ -62,7 +62,7 @@ public class CharacterSelect extends AppCompatActivity
             params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
-            TextView numberLabel = new TextView(this); 
+            TextView numberLabel = new TextView(this);
             numberLabel.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             numberLabel.setText("0");
             numberLabel.setId(i+300);
