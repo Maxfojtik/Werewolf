@@ -2,6 +2,7 @@ package uncontrollablyswervingdog.werewolf;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,18 +42,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // For clicking the delete button
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             View linearLayout =  findViewById(R.id.mainMenu);
+            // Remove the editText and delButton
             ((RelativeLayout) linearLayout).removeView(findViewById((v.getId()-10)));
             ((RelativeLayout) linearLayout).removeView(findViewById((v.getId())));
+            // Set the next editText relative to the above one
             RelativeLayout.LayoutParams nextEditTextParams = (RelativeLayout.LayoutParams) findViewById(v.getId()-9).getLayoutParams();
             nextEditTextParams.addRule(RelativeLayout.BELOW, v.getId()-11);
+            Log.d("v.getID",v.getId()+"");
+            // For the next editTexts, set the alignment so they are under the previous one
             for (int i=v.getId()-9;i<numEditTexts;i++) {
-                findViewById(i).setId(i-1);
+                Log.d("ADJUSTING",i+"");
+                EditText editText2 = (EditText) findViewById(i);
+                editText2.setHint((i-1)+"test");
+                editText2.setId(i-1);
                 RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) findViewById(i).getLayoutParams();
-                delButtonParams.addRule(RelativeLayout.ALIGN_TOP, i+10);
+                delButtonParams.addRule(RelativeLayout.BELOW, i+10);
             }
             numEditTexts--;
 
@@ -65,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addNameField() throws Exception {
+
+        numEditTexts++;
+
         View linearLayout =  findViewById(R.id.mainMenu);
 
         // Make the new textEdit
@@ -80,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         ((RelativeLayout) linearLayout).addView(newNameBox);
         // Adjust position for the new textEdit
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newNameBox.getLayoutParams();
-        if (numEditTexts ==1) {
+        if (numEditTexts ==2) {
             params.addRule(RelativeLayout.BELOW, name1.getId());
         }else {
             params.addRule(RelativeLayout.BELOW, numEditTexts-1);
@@ -116,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             newButton.setVisibility(View.INVISIBLE);
         }
 
-        numEditTexts++;
+
     }
 }
 
