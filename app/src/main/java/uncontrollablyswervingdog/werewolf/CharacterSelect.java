@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class CharacterSelect extends AppCompatActivity
 {
     String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
-    LinkedList<Button> addButtons = new LinkedList<Button>();
+    int[] amounts;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -29,8 +29,10 @@ public class CharacterSelect extends AppCompatActivity
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
+        amounts = new int[roles.length];
         for(int i = 0; i < roles.length; i++)
         {
+            amounts[i] = 0;
             TextView label = new TextView(this);
             label.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             label.setText(roles[i]);
@@ -51,9 +53,7 @@ public class CharacterSelect extends AppCompatActivity
             Button tempSubButton = new Button(this);
             tempSubButton.setLayoutParams(new RelativeLayout.LayoutParams(width/10, 50));
             tempSubButton.setText("-");
-            Log.v("MAX", tempSubButton.getText().toString());
             tempSubButton.setId(i+200); //add is 100, sub is 200, Number is 300, Label is 400
-            tempSubButton.setOnClickListener(new onClickSub(roles[i]));
 
             ((RelativeLayout) relLayout).addView(tempSubButton);
 
@@ -79,7 +79,8 @@ public class CharacterSelect extends AppCompatActivity
             tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width/10, 50));
             tempAddButton.setText("+");
             tempAddButton.setId(i+100); //add is 100, sub is 200, Number is 300
-            tempAddButton.setOnClickListener(new onClickAdd(roles[i]));
+            tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
+            tempSubButton.setOnClickListener(new onClick(numberLabel.getId(), i, -1));
 
             ((RelativeLayout) relLayout).addView(tempAddButton);
 
@@ -91,30 +92,27 @@ public class CharacterSelect extends AppCompatActivity
 
         }
     }
-    class onClickAdd implements View.OnClickListener
+    class onClick implements View.OnClickListener
     {
-        String role = "";
-        public onClickAdd(String role)
+        int index = 0;
+        int idOfText = 0;
+        int changeBy;
+        public onClick(int id, int index, int changeBy)
         {
-            this.role = role;
+            this.changeBy = changeBy;
+            this.index = index;
+            idOfText = id;
         }
         @Override
         public void onClick(View V)
         {
-
-        }
-    }
-    class onClickSub implements View.OnClickListener
-    {
-        String role = "";
-        public onClickSub(String role)
-        {
-            this.role = role;
-        }
-        @Override
-        public void onClick(View V)
-        {
-
+            TextView label = (TextView)findViewById(idOfText);
+            amounts[index] += changeBy;
+            if(amounts[index]<0)
+            {
+                amounts[index] = 0;
+            }
+            label.setText(String.valueOf(amounts[index]));
         }
     }
 }
