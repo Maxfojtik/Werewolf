@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     Button newButton;
     Button doneButton;
     Button delete1;
-    Player [] players;
+    static Player [] players;
 
     int numEditTexts = 1;
 
@@ -47,25 +47,40 @@ public class MainActivity extends AppCompatActivity {
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            newButton.setVisibility(View.VISIBLE);
+
             View linearLayout =  findViewById(R.id.mainMenu);
             // Remove the editText and delButton
             ((RelativeLayout) linearLayout).removeView(findViewById((v.getId()-10)));
             ((RelativeLayout) linearLayout).removeView(findViewById((v.getId())));
-            // Set the next editText relative to the above one
-            RelativeLayout.LayoutParams nextEditTextParams = (RelativeLayout.LayoutParams) findViewById(v.getId()-9).getLayoutParams();
-            nextEditTextParams.addRule(RelativeLayout.BELOW, v.getId()-11);
-            Log.d("v.getID",v.getId()+"");
-            // For the next editTexts, set the alignment so they are under the previous one
-            for (int i=v.getId()-9;i<numEditTexts;i++) {
-                Log.d("ADJUSTING",i+"");
-                EditText editText2 = (EditText) findViewById(i);
-                editText2.setHint((i-1)+"test");
-                editText2.setId(i-1);
-                RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) findViewById(i).getLayoutParams();
-                delButtonParams.addRule(RelativeLayout.BELOW, i+10);
-            }
             numEditTexts--;
+            // Set the next editText relative to the above one
+            if (findViewById(v.getId()-9)!=null) {
+                RelativeLayout.LayoutParams nextEditTextParams = (RelativeLayout.LayoutParams) findViewById(v.getId() - 9).getLayoutParams();
+                nextEditTextParams.addRule(RelativeLayout.BELOW, v.getId() - 11);
+            }
+            // For the next editTexts, set the alignment so they are under the previous one
+            for (int i=v.getId()-9;i<numEditTexts+2;i++) {
+                EditText editText2 = (EditText) findViewById(i);
+                Button delButton2 = (Button) findViewById(i+10);
+                editText2.setHint("Player "+(i-1));
+                editText2.setId(i-1);
+                delButton2.setId(i+9);
+                if (findViewById(i+1)!=null) {
+                    RelativeLayout.LayoutParams lowerEditTextParams = (RelativeLayout.LayoutParams) findViewById(i+1).getLayoutParams();
+                    lowerEditTextParams.addRule(RelativeLayout.BELOW, i-1);
+                }
+            }
+            for (int i=v.getId();i<=numEditTexts+10;i++) {
+                RelativeLayout.LayoutParams lowerEditTextParams = (RelativeLayout.LayoutParams) findViewById(i).getLayoutParams();
+                lowerEditTextParams.addRule(RelativeLayout.ALIGN_BOTTOM, i-10);
+            }
+            RelativeLayout.LayoutParams lowerEditTextParams = (RelativeLayout.LayoutParams) newButton.getLayoutParams();
+            lowerEditTextParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
 
+            RelativeLayout.LayoutParams doneButtonParams = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
+            doneButtonParams.addRule(RelativeLayout.BELOW, numEditTexts);
         }
     };
 
@@ -85,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         EditText newNameBox = new EditText(this);
         newNameBox.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         newNameBox.setText("");
-        newNameBox.setHint(String.valueOf(numEditTexts));
+        newNameBox.setHint("Player "+numEditTexts);
         newNameBox.setEms(12);
         newNameBox.setMaxLines(1);
         newNameBox.setSingleLine(true);
@@ -103,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         params.addRule(RelativeLayout.ALIGN_RIGHT, name1.getId());
 
         // Make the new del button if needed
-        if (numEditTexts >= 4) {
+        if (numEditTexts > 4) {
             Button delButton = new Button(this);
             delButton.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             delButton.setText("-");
