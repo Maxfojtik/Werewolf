@@ -151,13 +151,22 @@ public class MainActivity extends AppCompatActivity {
         players = new Player [numEditTexts];
         EditText var1 = (EditText) findViewById(R.id.name1);
 //        Log.d("GETNAMES",var1.getText()+"the");
-        players[0] = new Player(var1.getText()+"");
+        if ((var1.getText()+"").equals("")) {
+            players[0] = new Player("Player 1");
+        }
+        else {
+            players[0] = new Player(var1.getText()+"");
+        }
         for (int i=2;i<players.length+1;i++) {
             EditText var = (EditText) findViewById(i+0);
 //            Log.d("GETNAMES",var.getText()+"the1");
-            players[i-1] = new Player(var.getText()+"");
+            if ((var.getText()+"").equals("")) {
+                players[i-1] = new Player(var.getHint()+"");
+            }
+            else {
+                players[i-1] = new Player(var.getText()+"");
+            }
         }
 //        Log.d("PLAYERS",players+"");
     }
 }
-
