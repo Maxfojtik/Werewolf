@@ -150,12 +150,12 @@ public class MainActivity extends AppCompatActivity {
     public void getNames() {
         players = new Player [numEditTexts];
         EditText var1 = (EditText) findViewById(R.id.name1);
-        Log.d("GETNAMES",var1.getText()+"");
+//        Log.d("GETNAMES",var1.getText()+"the");
         players[0] = new Player(var1.getText()+"");
-        for (int i=1;i<=players.length;i++) {
-            EditText var = (EditText) findViewById(i+1);
-            Log.d("GETNAMES",var.getText()+"");
-            players[i] = new Player(var.getText()+"");
+        for (int i=2;i<players.length+1;i++) {
+            EditText var = (EditText) findViewById(i+0);
+//            Log.d("GETNAMES",var.getText()+"the1");
+            players[i-1] = new Player(var.getText()+"");
         }
 //        Log.d("PLAYERS",players+"");
     }
