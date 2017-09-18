@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CharacterSelect"></activity>
+        <activity android:name=".Round1"></activity>
     </application>
 
 </manifest>

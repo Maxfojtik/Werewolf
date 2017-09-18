@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     public void getNames() {
         players = new Player [numEditTexts];
         EditText var1 = (EditText) findViewById(R.id.name1);
-//        Log.d("GETNAMES",var1.getText()+"the");
         if ((var1.getText()+"").equals("")) {
             players[0] = new Player("Player 1");
         }
@@ -159,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         }
         for (int i=2;i<players.length+1;i++) {
             EditText var = (EditText) findViewById(i+0);
-//            Log.d("GETNAMES",var.getText()+"the1");
             if ((var.getText()+"").equals("")) {
                 players[i-1] = new Player(var.getHint()+"");
             }
@@ -167,6 +165,5 @@ public class MainActivity extends AppCompatActivity {
                 players[i-1] = new Player(var.getText()+"");
             }
         }
-//        Log.d("PLAYERS",players+"");
     }
 }
