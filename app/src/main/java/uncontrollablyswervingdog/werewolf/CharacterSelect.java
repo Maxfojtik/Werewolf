@@ -1,5 +1,6 @@
 package uncontrollablyswervingdog.werewolf;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,7 +20,7 @@ import java.util.Random;
 
 public class CharacterSelect extends AppCompatActivity
 {
-    String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
+    static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
     int[] amounts;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -164,6 +165,8 @@ public class CharacterSelect extends AppCompatActivity
                     assignedNumber++;
                 }
             }
+            Intent intent = new Intent(CharacterSelect.this, Round1.class);
+            startActivity(intent);
         }
     }
     class onClick implements View.OnClickListener

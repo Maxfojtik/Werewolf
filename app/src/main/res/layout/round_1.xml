@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" android:id="@+id/round_1">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/playerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Player 1" />
+        android:text="Player 1"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="233dp"
+    <TextView
+        android:id="@+id/role"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ready" />
-</LinearLayout>
+        android:text="[role]"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/playerName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/explanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[expl]"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/role"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>
