@@ -3,6 +3,7 @@ package uncontrollablyswervingdog.werewolf;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -99,6 +100,8 @@ public class CharacterSelect extends AppCompatActivity
         doneButton.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         doneButton.setText("Done");
         doneButton.setId(0+500);
+        doneButton.setVisibility(View.INVISIBLE);
+        doneButton.setOnClickListener(new doneClick());
         ((RelativeLayout) relLayout).addView(doneButton);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
 //        params.addRule(RelativeLayout.ALIGN_RIGHT, (roles.length-1)+200);
@@ -109,15 +112,16 @@ public class CharacterSelect extends AppCompatActivity
         params.topMargin = 10;
 
         TextView numLeft = new TextView(this);
+        numLeft.setTextSize(30);
         numLeft.setId(1+500);
         numLeft.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         numLeft.setText(MainActivity.players.length+"");
+        numLeft.setGravity(Gravity.CENTER);
         ((RelativeLayout) relLayout).addView(numLeft);
         params = (RelativeLayout.LayoutParams) numLeft.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
-
     }
     Random Rand;
     HashMap<String, Integer> avaliableRoles = new HashMap<String, Integer>();
@@ -129,6 +133,11 @@ public class CharacterSelect extends AppCompatActivity
             int numPlayers = MainActivity.players.length;
             int assignedNumber = 0;
             Rand = new Random();
+            avaliableRoles.clear();
+            for(int i = 0; i < MainActivity.players.length; i++)
+            {
+                MainActivity.players[i].role = null;
+            }
             for(int i = 0; i < roles.length; i++)
             {
                 avaliableRoles.put(roles[i], amounts[i]);
@@ -138,14 +147,21 @@ public class CharacterSelect extends AppCompatActivity
                 int chosenPlayer = Rand.nextInt(numPlayers);
                 if(MainActivity.players[chosenPlayer].role==null)
                 {
-                    Map.Entry[] entries = (Map.Entry[]) avaliableRoles.entrySet().toArray();
-                    String role = (String) entries[Rand.nextInt(entries.length)].getKey();
+                    Object[] keys = avaliableRoles.keySet().toArray(); // returns an array of keys
+                    Object[] nums = (Object[]) avaliableRoles.values().toArray(); // returns an array of values
+                    int roleSelected = Rand.nextInt(keys.length);
+                    String role = (String) keys[roleSelected];
                     MainActivity.players[chosenPlayer].role = role;
-                    int number = (int) entries[Rand.nextInt(entries.length)].getValue()-1;
+                    int number = (int) nums[roleSelected]-1;
                     if(number==0)
                     {
                         avaliableRoles.remove(role);
                     }
+                    else
+                    {
+                        avaliableRoles.put((String) keys[roleSelected], number);
+                    }
+                    assignedNumber++;
                 }
             }
         }
@@ -169,24 +185,26 @@ public class CharacterSelect extends AppCompatActivity
             {
                 total += amounts[i];
             }
-            if(total<MainActivity.players.length)
+            if(total<MainActivity.players.length || changeBy==-1)
             {
                 TextView label = (TextView) findViewById(idOfText);
                 amounts[index] += changeBy;
                 if (amounts[index] < 0) {
                     amounts[index] = 0;
+                    return;
                 }
                 label.setText(String.valueOf(amounts[index]));
-                ((TextView) findViewById(1+500)).setText(MainActivity.players.length-total);
+                total += changeBy;
+                ((TextView) findViewById(500+1)).setText((MainActivity.players.length-total)+"");
                 if(total==MainActivity.players.length)
                 {
-                    ((TextView) findViewById(0+500)).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(1+500)).setVisibility(View.INVISIBLE);
+                    findViewById(0+500).setVisibility(View.VISIBLE);
+                    findViewById(1+500).setVisibility(View.INVISIBLE);
                 }
                 else
                 {
-                    ((TextView) findViewById(0+500)).setVisibility(View.INVISIBLE);
-                    ((TextView) findViewById(1+500)).setVisibility(View.VISIBLE);
+                    findViewById(0+500).setVisibility(View.INVISIBLE);
+                    findViewById(1+500).setVisibility(View.VISIBLE);
                 }
             }
         }
