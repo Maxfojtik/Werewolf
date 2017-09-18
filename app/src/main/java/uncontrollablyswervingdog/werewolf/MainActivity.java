@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     Button newButton;
     Button doneButton;
     Button delete1;
+    Player [] players;
 
     int numEditTexts = 1;
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void doneButton(View v) {
+        getNames();
         Intent intent = new Intent(MainActivity.this, CharacterSelect.class);
         startActivity(intent);
     }
@@ -128,7 +130,19 @@ public class MainActivity extends AppCompatActivity {
             newButton.setVisibility(View.INVISIBLE);
         }
 
+    }
 
+    public void getNames() {
+        players = new Player [numEditTexts];
+        EditText var1 = (EditText) findViewById(R.id.name1);
+        Log.d("GETNAMES",var1.getText()+"");
+        players[0] = new Player(var1.getText()+"");
+        for (int i=1;i<=players.length;i++) {
+            EditText var = (EditText) findViewById(i+1);
+            Log.d("GETNAMES",var.getText()+"");
+            players[i] = new Player(var.getText()+"");
+        }
+//        Log.d("PLAYERS",players+"");
     }
 }
 
