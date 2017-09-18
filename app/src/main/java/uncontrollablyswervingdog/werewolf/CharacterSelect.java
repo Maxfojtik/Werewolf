@@ -30,6 +30,7 @@ public class CharacterSelect extends AppCompatActivity
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         amounts = new int[roles.length];
+        int buttonHeight = 0;
         for(int i = 0; i < roles.length; i++)
         {
             amounts[i] = 0;
@@ -89,6 +90,27 @@ public class CharacterSelect extends AppCompatActivity
             params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
             params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
             params.rightMargin = 15;
+        }
+        Button doneButton = new Button(this);
+        doneButton.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
+        doneButton.setText("Done");
+        ((RelativeLayout) relLayout).addView(doneButton);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
+//        params.addRule(RelativeLayout.ALIGN_RIGHT, (roles.length-1)+200);
+//        params.addRule(RelativeLayout.ALIGN_LEFT, (roles.length-1)+400);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, R.id.charSelect);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, R.id.charSelect);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
+        params.topMargin = 10;
+
+
+    }
+    class doneClick implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View V)
+        {
+            int numPlayers = 10;
 
         }
     }
