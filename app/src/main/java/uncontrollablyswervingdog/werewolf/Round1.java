@@ -28,14 +28,17 @@ public class Round1 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        playerNameTextView = (TextView) findViewById(R.id.playerName);
-        roleTextView = (TextView) findViewById(R.id.role);
-        explanationTextView = (TextView) findViewById(R.id.explanation);
-
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.round_1_reveal);
         setContentView(R.layout.round_1);
+
+        playerNameTextView = (TextView) findViewById(R.id.playerName);
+        Log.d("PLAYERNAME",playerNameTextView+" "+R.id.playerName);
+        roleTextView = (TextView) findViewById(R.id.role);
+        explanationTextView = (TextView) findViewById(R.id.explanation);
+
         generateView(findViewById(R.id.round_1), "Werewolf", 0);
+
     }
 
     void generateDoneButton(View view)
@@ -54,8 +57,8 @@ public class Round1 extends AppCompatActivity {
     }
     void generateView(View layout, String role, int playerNum)
     {
-        Log.d("STUFF",MainActivity.players[playerNum].name);
-//        playerNameTextView.setText(MainActivity.players[playerNum].name);
+        playerNameTextView.setText(MainActivity.players[playerNum].name);
+        roleTextView.setText(MainActivity.players[playerNum].role);
         if (role.equals("Werewolf"))
         {
             generateWerewolf(layout);
@@ -63,6 +66,7 @@ public class Round1 extends AppCompatActivity {
     }
     void generateWerewolf(View layout)
     {
+        explanationTextView.setText("You see the other werewolf at night.\nWin condition: no werewolf lynched");
         if(countRoles("Werewolf")>1)//not lone wolf
         {
             
