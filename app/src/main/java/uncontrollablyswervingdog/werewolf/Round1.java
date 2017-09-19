@@ -3,6 +3,7 @@ package uncontrollablyswervingdog.werewolf;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -10,6 +11,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Round1 extends AppCompatActivity {
+
+    TextView playerNameTextView;
+    TextView roleTextView;
+    TextView explanationTextView;
+
     int countRoles(String role) {
         int total = 0;
         for (int i = 0; i < MainActivity.players.length; i++) {
@@ -22,10 +28,14 @@ public class Round1 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        playerNameTextView = (TextView) findViewById(R.id.playerName);
+        roleTextView = (TextView) findViewById(R.id.role);
+        explanationTextView = (TextView) findViewById(R.id.explanation);
+
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.round_1_reveal);
         setContentView(R.layout.round_1);
-        generateView(findViewById(R.id.round_1), "Werewolf");
+        generateView(findViewById(R.id.round_1), "Werewolf", 0);
     }
 
     void generateDoneButton(View view)
@@ -42,8 +52,10 @@ public class Round1 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(0,0,0,20);
     }
-    void generateView(View layout, String role)
+    void generateView(View layout, String role, int playerNum)
     {
+        Log.d("STUFF",MainActivity.players[playerNum].name);
+//        playerNameTextView.setText(MainActivity.players[playerNum].name);
         if (role.equals("Werewolf"))
         {
             generateWerewolf(layout);
