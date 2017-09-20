@@ -53,7 +53,7 @@ public class Round1 extends AppCompatActivity {
     {
         if(countRoles("Werewolf")>1)//not lone wolf
         {
-            
+
         }
         else//lone wolf
         {
