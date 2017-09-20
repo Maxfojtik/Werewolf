@@ -141,7 +141,10 @@ public class CharacterSelect extends AppCompatActivity
             }
             for(int i = 0; i < roles.length; i++)
             {
-                avaliableRoles.put(roles[i], amounts[i]);
+                if(amounts[i]>0)
+                {
+                    avaliableRoles.put(roles[i], amounts[i]);
+                }
             }
             while(assignedNumber!=numPlayers)
             {
