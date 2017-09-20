@@ -90,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void timerButton(View v) {
+        Intent intent = new Intent(MainActivity.this, Timer.class);
+        startActivity(intent);
+    }
+
     public void addNameField() throws Exception {
 
         numEditTexts++;

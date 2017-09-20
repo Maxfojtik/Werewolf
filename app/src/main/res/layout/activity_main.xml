@@ -50,4 +50,17 @@
         android:layout_marginRight="11dp"
         android:layout_marginEnd="11dp" />
 
+    <Button
+        android:id="@+id/toTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="31dp"
+        android:layout_marginEnd="21dp"
+        android:onClick="timerButton"
+        android:layout_marginRight="21dp"
+        android:layout_toLeftOf="@+id/done_button"
+        android:layout_toStartOf="@+id/done_button"
+        android:text="timer tester" />
+
 </RelativeLayout>
