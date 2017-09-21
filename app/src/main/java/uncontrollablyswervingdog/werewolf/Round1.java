@@ -3,6 +3,7 @@ package uncontrollablyswervingdog.werewolf;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,5 +77,28 @@ public class Round1 extends AppCompatActivity {
 
         }
         generateDoneButton(layout);
+    }
+    void showPlayerButtons(int excludedPlayerIndex)
+    {
+        View relLayout = findViewById(R.id.round_1);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        for(int i = 0; i < MainActivity.players.length; i++)
+        {
+            Button tempAddButton = new Button(this);
+            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width-20, 500));
+            tempAddButton.setText("+");
+            tempAddButton.setId(i+100);
+            //tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
+
+            ((RelativeLayout) relLayout).addView(tempAddButton);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
+            params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
+            params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
+            params.rightMargin = 15;
+        }
     }
 }
