@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -62,43 +63,91 @@ public class Round1 extends AppCompatActivity {
         roleTextView.setText(MainActivity.players[playerNum].role);
         if (role.equals("Werewolf"))
         {
-            generateWerewolf(layout);
+            generateWerewolf(layout, playerNum);
+        }
+        else if (role.equals("Seer")) {
+            generateSeer(layout, playerNum);
         }
     }
-    void generateWerewolf(View layout)
+    void showWerewolves(View view, int playerNum) {
+        String otherWerewolves = "";
+        for (int i=0;i<MainActivity.players.length; i++){
+            if (MainActivity.players[i].role.equals("Werewolf")&&i!=playerNum) {
+                otherWerewolves += "\n" + MainActivity.players[i].name;
+
+            }
+        }
+        if (countRoles("Werewolf")>2) {
+            showInfo(view, "The other werewolves are:"+otherWerewolves);
+        }
+        else {
+            showInfo(view, "The other werewolf is:"+otherWerewolves);
+        }
+        generateDoneButton(view);
+    }
+    void generateWerewolf(View view, int playerNum)
     {
-        explanationTextView.setText("You see the other werewolf at night.\nWin condition: no werewolf lynched");
+        explanationTextView.setText("You see the other werewolves. If you're alone, see an unused role.\nAlignment: Werewolves");
         if(countRoles("Werewolf")>1)//not lone wolf
         {
-
+            showWerewolves(view, playerNum);
         }
         else//lone wolf
         {
-
+            showUnusedButtons();
         }
-        generateDoneButton(layout);
+    }
+    void generateSeer(View layout, int playerNum) {
+        explanationTextView.setText("You see another player's role or two unused roles.\nAlignment: Village");
+        showPlayerButtons(playerNum);
+    }
+    void showInfo(View view, String info) {
+        TextView tempAddTextView = new TextView(this);
+        tempAddTextView.setText(info);
+        tempAddTextView.setId(100+0);
+        tempAddTextView.setTextSize(35);
+        tempAddTextView.setGravity(Gravity.CENTER);
+        ((RelativeLayout) view).addView(tempAddTextView);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddTextView.getLayoutParams();
+        params.addRule(RelativeLayout.BELOW, R.id.explanation);
+
+    }
+    void showUnusedButtons() {
+        View view = findViewById(R.id.round_1);
+        // will need center cards first
     }
     void showPlayerButtons(int excludedPlayerIndex)
     {
-        View relLayout = findViewById(R.id.round_1);
+        View view = findViewById(R.id.round_1);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
+        int j=0; //j is used instead of i to fix the times when we skip the player whose turn it is
         for(int i = 0; i < MainActivity.players.length; i++)
         {
-            Button tempAddButton = new Button(this);
-            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width-20, 500));
-            tempAddButton.setText("+");
-            tempAddButton.setId(i+100);
-            //tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
+            if (i!=excludedPlayerIndex) {
+                Button tempAddButton = new Button(this);
+                tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width - 20, 500));
+                tempAddButton.setText(MainActivity.players[i] + "");
+                tempAddButton.setId(j);
+                //tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
 
-            ((RelativeLayout) relLayout).addView(tempAddButton);
+                ((RelativeLayout) view).addView(tempAddButton);
 
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
-            params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
-            params.rightMargin = 15;
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
+                if (j%2==0) {
+//                    params.addRule(RelativeLayout.BELOW, label.getId());
+//                    params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
+                    params.rightMargin = 15;
+                }
+                else {
+//                    params.addRule(RelativeLayout.BELOW, label.getId());
+//                    params.addRule(RelativeLayout.RIGHT_OF, numberLabel.getId());
+                    params.leftMargin = 15;
+                }
+            }
+            j++;
         }
     }
 }
