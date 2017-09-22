@@ -7,6 +7,7 @@ package uncontrollablyswervingdog.werewolf;
 public class Player {
     String name;
     String role;
+    String roleNow = role;
     String action;
     String result;
 

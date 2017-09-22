@@ -22,6 +22,7 @@ public class CharacterSelect extends AppCompatActivity
 {
     static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
     int[] amounts;
+    static String[] unusedRoles = new String[]{"Werewolf","Villager","Seer"};
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
