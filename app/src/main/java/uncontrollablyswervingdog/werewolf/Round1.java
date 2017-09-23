@@ -18,8 +18,7 @@ public class Round1 extends AppCompatActivity {
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
-
-//    CharacterSelect.unusedRoles[0];
+    int currentPlayer = 0;
 
     int countRoles(String role) {
         int total = 0;
@@ -42,13 +41,88 @@ public class Round1 extends AppCompatActivity {
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
 
-        generateView(MainActivity.players[0].role, 0);
+
+        generateView(MainActivity.players[currentPlayer].role, 0);
 
     }
 
     // Put this back in later, to stop the back button
 //    @Override
 //    public void onBackPressed() {}
+
+    class DoneClick implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            //buttonstuff
+        }
+    }
+    class seerClick implements View.OnClickListener {
+        String selection;
+        public seerClick(String selection)
+        {
+            this.selection = selection;
+        }
+        @Override
+        public void onClick(View view) {
+            removeSeerOptions();
+            if (selection.equals("player")) {
+                showPlayerButtons(currentPlayer);
+            }
+            else {
+                showUnusedRoleButtons(true);
+            }
+        }
+    }
+    class unusedRoleClick implements View.OnClickListener {
+        boolean toggleButtons;
+        public unusedRoleClick(boolean toggleButtons)
+        {
+            this.toggleButtons = toggleButtons;
+        }
+        @Override
+        public void onClick(View view) {
+            int numChecked = 0;
+            int notChecked=0;
+            if (toggleButtons) {
+                for (int i=0; i<3;i++) {
+                    if (((ToggleButton) findViewById(i)).isChecked()) {
+                        numChecked ++;
+                    }
+                    else {
+                        notChecked = i; // Instead of trying to remember the checked things, just remember the not checked one
+                    }
+                }
+            }
+            if (numChecked > 1) {
+                String rolesSeen = "";
+                for (int i=0; i<3;i++) {
+                    if (((ToggleButton) findViewById(i)).isChecked()&&i!=notChecked) {
+                        rolesSeen += "\n"+CharacterSelect.unusedRoles[i];
+                    }
+                }
+                removeUnusedRoleButtons();
+                showInfo("You saw: "+rolesSeen);
+                generateDoneButton();
+            }
+            else if (!toggleButtons) {
+                String rolesSeen = "";
+                rolesSeen += "\n"+CharacterSelect.unusedRoles[view.getId()];
+                removeUnusedRoleButtons();
+                showInfo("You saw: "+rolesSeen);
+                generateDoneButton();
+            }
+        }
+    }
+    class playerSelection implements View.OnClickListener {
+        boolean toggleButtons;
+        public playerSelection(boolean toggleButtons) {
+            this.toggleButtons = toggleButtons;
+        }
+        @Override
+        public void onClick(View view) {
+
+        }
+    }
 
     void generateDoneButton()
     {
@@ -66,8 +140,8 @@ public class Round1 extends AppCompatActivity {
         params.setMargins(0,0,0,20);
     }
     void nextPlayer() {
-        int a=2;
     }
+
     void generateView(String role, int playerNum)
     {
         playerNameTextView.setText(MainActivity.players[playerNum].name);
@@ -100,7 +174,7 @@ public class Round1 extends AppCompatActivity {
                 otherWerewolves += "\n" + MainActivity.players[i].name;
             }
         }
-        if (playerNum==100) {
+        if (playerNum==100) { // for the minion
             showInfo("The werewolves are:"+otherWerewolves);
         }
         else {
@@ -112,7 +186,7 @@ public class Round1 extends AppCompatActivity {
             generateDoneButton();
         }
     }
-    void generateWerewolf(int playerNum)
+    void generateWerewolf(int playerNum) // done
     {
         explanationTextView.setText("You see the other werewolves. If you're alone, see an unused role.");
         if(countRoles("Werewolf")>1)//not lone wolf
@@ -137,13 +211,20 @@ public class Round1 extends AppCompatActivity {
         explanationTextView.setText("Change cards between two other players.");
         showPlayerButtons(playerNum, true);
     }
-    void generateMinion() {
+    void generateMinion() { // done
         explanationTextView.setText("You see who the werewolves are.");
         showWerewolves(100);
+        generateDoneButton();
     }
-    void generateVillager() {
+    void generateVillager() { //done lol
         explanationTextView.setText("You do nothing at night.");
         generateDoneButton();
+    }
+    void generalRemove(int to) {
+        View view = findViewById(R.id.round_1);
+        for (int i=0;i<to;i++) {
+            ((RelativeLayout) view).removeView(findViewById(i));
+        }
     }
     void showInfo(String info) {
         View view = findViewById(R.id.round_1);
@@ -156,7 +237,11 @@ public class Round1 extends AppCompatActivity {
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddTextView.getLayoutParams();
         params.addRule(RelativeLayout.BELOW, R.id.explanation);
-
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    }
+    void removeInfo() {
+        View view = findViewById(R.id.round_1);
+        ((RelativeLayout) view).removeView(findViewById(100+0));
     }
     void showSeerOptions() {
         View view = findViewById(R.id.round_1);
@@ -169,6 +254,7 @@ public class Round1 extends AppCompatActivity {
         tempAddButton1.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
         tempAddButton1.setText("Player Roles");
         tempAddButton1.setId(0);
+        tempAddButton1.setOnClickListener(new seerClick("player"));
         ((RelativeLayout) view).addView(tempAddButton1);
         RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams) tempAddButton1.getLayoutParams();
         params1.addRule(RelativeLayout.BELOW, R.id.explanation);
@@ -179,11 +265,17 @@ public class Round1 extends AppCompatActivity {
         tempAddButton2.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
         tempAddButton2.setText("Unused Roles");
         tempAddButton2.setId(1+0);
+        tempAddButton2.setOnClickListener(new seerClick("unused"));
         ((RelativeLayout) view).addView(tempAddButton2);
         RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) tempAddButton2.getLayoutParams();
         params2.addRule(RelativeLayout.BELOW, R.id.explanation);
         params2.leftMargin = width/28+width/2;
         params2.topMargin = 15;
+    }
+    void removeSeerOptions() {
+        View view = findViewById(R.id.round_1);
+        ((RelativeLayout) view).removeView(findViewById(0));
+        ((RelativeLayout) view).removeView(findViewById(1+0));
     }
     void showUnusedRoleButtons(boolean toggleButtons) {
         View view = findViewById(R.id.round_1);
@@ -195,9 +287,10 @@ public class Round1 extends AppCompatActivity {
             Button tempAddButton = new Button(this);
             if (toggleButtons) {
                 tempAddButton = new ToggleButton(this);
-                ((ToggleButton) tempAddButton).setTextOn(MainActivity.players[i].name + "");
-                ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
+                ((ToggleButton) tempAddButton).setTextOn("Role "+(i+1));
+                ((ToggleButton) tempAddButton).setTextOff("Role "+(i+1));
             }
+            tempAddButton.setOnClickListener(new unusedRoleClick(toggleButtons));
             tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
             tempAddButton.setText("Role "+(i+1));
             tempAddButton.setId(i);
@@ -208,7 +301,13 @@ public class Round1 extends AppCompatActivity {
             params.topMargin = 15;
         }
     }
-    void showPlayerButtons(int excludedPlayerIndex) {showPlayerButtons(excludedPlayerIndex,false);} // Optional Parameters
+    void removeUnusedRoleButtons() {
+        View view = findViewById(R.id.round_1);
+        ((RelativeLayout) view).removeView(findViewById(0));
+        ((RelativeLayout) view).removeView(findViewById(1+0));
+        ((RelativeLayout) view).removeView(findViewById(2+0));
+    }
+    void showPlayerButtons(int excludedPlayerIndex) {showPlayerButtons(excludedPlayerIndex,false);} // Optional Parameter
     void showPlayerButtons(int excludedPlayerIndex, boolean toggleButtons)
     {
         View view = findViewById(R.id.round_1);
@@ -229,6 +328,7 @@ public class Round1 extends AppCompatActivity {
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
                 tempAddButton.setText(MainActivity.players[i].name + "");
                 tempAddButton.setId(i);
+                tempAddButton.setOnClickListener(new playerSelection(toggleButtons));
 
                 ((RelativeLayout) view).addView(tempAddButton);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
