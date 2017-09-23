@@ -117,7 +117,7 @@ public class CharacterSelect extends AppCompatActivity
         numLeft.setTextSize(30);
         numLeft.setId(1+500);
         numLeft.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
-        numLeft.setText(MainActivity.players.length+"");
+        numLeft.setText(MainActivity.players.length+3+"");
         numLeft.setGravity(Gravity.CENTER);
         ((RelativeLayout) relLayout).addView(numLeft);
         params = (RelativeLayout.LayoutParams) numLeft.getLayoutParams();
@@ -192,7 +192,7 @@ public class CharacterSelect extends AppCompatActivity
             {
                 total += amounts[i];
             }
-            if(total<MainActivity.players.length || changeBy==-1)
+            if(total<MainActivity.players.length+3 || changeBy==-1)
             {
                 TextView label = (TextView) findViewById(idOfText);
                 amounts[index] += changeBy;
@@ -202,8 +202,8 @@ public class CharacterSelect extends AppCompatActivity
                 }
                 label.setText(String.valueOf(amounts[index]));
                 total += changeBy;
-                ((TextView) findViewById(500+1)).setText((MainActivity.players.length-total)+"");
-                if(total==MainActivity.players.length)
+                ((TextView) findViewById(500+1)).setText((MainActivity.players.length+3-total)+"");
+                if(total==MainActivity.players.length+3)
                 {
                     findViewById(0+500).setVisibility(View.VISIBLE);
                     findViewById(1+500).setVisibility(View.INVISIBLE);

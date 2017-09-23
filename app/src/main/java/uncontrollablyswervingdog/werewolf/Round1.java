@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class Round1 extends AppCompatActivity {
 
@@ -45,6 +46,10 @@ public class Round1 extends AppCompatActivity {
 
     }
 
+    // Put this back in later, to stop the back button
+//    @Override
+//    public void onBackPressed() {}
+
     void generateDoneButton()
     {
         View view = findViewById(R.id.round_1);
@@ -60,6 +65,9 @@ public class Round1 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(0,0,0,20);
     }
+    void nextPlayer() {
+        int a=2;
+    }
     void generateView(String role, int playerNum)
     {
         playerNameTextView.setText(MainActivity.players[playerNum].name);
@@ -69,7 +77,7 @@ public class Round1 extends AppCompatActivity {
                 generateWerewolf(playerNum);
                 break;
             case "Seer":
-                generateSeer(playerNum);
+                generateSeer();
                 break;
             case "Robber":
                 generateRobber(playerNum);
@@ -90,7 +98,6 @@ public class Round1 extends AppCompatActivity {
         for (int i=0;i<MainActivity.players.length; i++){
             if (MainActivity.players[i].role.equals("Werewolf")&&i!=playerNum) {
                 otherWerewolves += "\n" + MainActivity.players[i].name;
-
             }
         }
         if (playerNum==100) {
@@ -107,34 +114,35 @@ public class Round1 extends AppCompatActivity {
     }
     void generateWerewolf(int playerNum)
     {
-        explanationTextView.setText("You see the other werewolves. If you're alone, see an unused role.\nAlignment: Werewolves");
+        explanationTextView.setText("You see the other werewolves. If you're alone, see an unused role.");
         if(countRoles("Werewolf")>1)//not lone wolf
         {
             showWerewolves(playerNum);
         }
         else//lone wolf
         {
-            showUnusedRoleButtons();
+            showUnusedRoleButtons(false);
         }
     }
-    void generateSeer(int playerNum) {
-        explanationTextView.setText("You see another player's role or two unused roles.\nAlignment: Village");
-        showPlayerButtons(playerNum);
+    void generateSeer() {
+        explanationTextView.setText("You see another player's role or two unused roles.");
+        showSeerOptions();
+//        showUnusedRoleButtons();
     }
     void generateRobber(int playerNum) {
-        explanationTextView.setText("Take and view someone else's role and give them your own.\nAlignment: New Role");
+        explanationTextView.setText("Take and view someone else's role and give them your own.");
         showPlayerButtons(playerNum);
     }
     void generateTroublemaker(int playerNum) {
-        explanationTextView.setText("Change cards between two other players.\nAlignment: Village");
-        showPlayerButtons(playerNum);
+        explanationTextView.setText("Change cards between two other players.");
+        showPlayerButtons(playerNum, true);
     }
     void generateMinion() {
-        explanationTextView.setText("You see who the werewolves are.\nAlignment: Werewolves");
+        explanationTextView.setText("You see who the werewolves are.");
         showWerewolves(100);
     }
     void generateVillager() {
-        explanationTextView.setText("You do nothing at night.\nAlignment: Village");
+        explanationTextView.setText("You do nothing at night.");
         generateDoneButton();
     }
     void showInfo(String info) {
@@ -152,13 +160,56 @@ public class Round1 extends AppCompatActivity {
     }
     void showSeerOptions() {
         View view = findViewById(R.id.round_1);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int buttonWidth = 3 * width / 7;
 
+        Button tempAddButton1 = new Button(this);
+        tempAddButton1.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
+        tempAddButton1.setText("Player Roles");
+        tempAddButton1.setId(0);
+        ((RelativeLayout) view).addView(tempAddButton1);
+        RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams) tempAddButton1.getLayoutParams();
+        params1.addRule(RelativeLayout.BELOW, R.id.explanation);
+        params1.leftMargin = width/21;
+        params1.topMargin = 15;
+
+        Button tempAddButton2 = new Button(this);
+        tempAddButton2.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
+        tempAddButton2.setText("Unused Roles");
+        tempAddButton2.setId(1+0);
+        ((RelativeLayout) view).addView(tempAddButton2);
+        RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) tempAddButton2.getLayoutParams();
+        params2.addRule(RelativeLayout.BELOW, R.id.explanation);
+        params2.leftMargin = width/28+width/2;
+        params2.topMargin = 15;
     }
-    void showUnusedRoleButtons() {
+    void showUnusedRoleButtons(boolean toggleButtons) {
         View view = findViewById(R.id.round_1);
-        // will need unused roles first, for which the character selection screen will need to be fixed
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int buttonWidth = 2*width/7;
+        for (int i=0;i<3;i++){
+            Button tempAddButton = new Button(this);
+            if (toggleButtons) {
+                tempAddButton = new ToggleButton(this);
+                ((ToggleButton) tempAddButton).setTextOn(MainActivity.players[i].name + "");
+                ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
+            }
+            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
+            tempAddButton.setText("Role "+(i+1));
+            tempAddButton.setId(i);
+            ((RelativeLayout) view).addView(tempAddButton);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.id.explanation);
+            params.leftMargin = width/14+2*i*width/7;
+            params.topMargin = 15;
+        }
     }
-    void showPlayerButtons(int excludedPlayerIndex)
+    void showPlayerButtons(int excludedPlayerIndex) {showPlayerButtons(excludedPlayerIndex,false);} // Optional Parameters
+    void showPlayerButtons(int excludedPlayerIndex, boolean toggleButtons)
     {
         View view = findViewById(R.id.round_1);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -170,35 +221,35 @@ public class Round1 extends AppCompatActivity {
         {
             if (i!=excludedPlayerIndex) {
                 Button tempAddButton = new Button(this);
+                if (toggleButtons) {
+                    tempAddButton = new ToggleButton(this);
+                    ((ToggleButton) tempAddButton).setTextOn(MainActivity.players[i].name + "");
+                    ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
+                }
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
                 tempAddButton.setText(MainActivity.players[i].name + "");
                 tempAddButton.setId(i);
-                //tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
 
                 ((RelativeLayout) view).addView(tempAddButton);
-
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
+
                 if (j == 0) { // Special case for the top ones because they are tied to the explanation
                     params.addRule(RelativeLayout.BELOW, R.id.explanation);
-                    params.addRule(RelativeLayout.ALIGN_RIGHT, RelativeLayout.CENTER_VERTICAL);
                     params.leftMargin = width/2-buttonWidth-15;
                     params.topMargin = 15;
                 }
                 else if (j == 1) {
                     params.addRule(RelativeLayout.BELOW, R.id.explanation);
-                    params.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.CENTER_VERTICAL);
                     params.leftMargin = 15+width/2;
                     params.topMargin = 15;
                 }
                 else if (j % 2 == 0) {
                     params.addRule(RelativeLayout.BELOW, i - 2);
-                    params.addRule(RelativeLayout.ALIGN_RIGHT, RelativeLayout.CENTER_VERTICAL);
                     params.leftMargin = width/2-buttonWidth-15;
                     params.topMargin = 15;
                 }
                 else {
                     params.addRule(RelativeLayout.BELOW, i - 2);
-                    params.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.CENTER_VERTICAL);
                     params.leftMargin = 15+width/2;
                     params.topMargin = 15;
                 }
