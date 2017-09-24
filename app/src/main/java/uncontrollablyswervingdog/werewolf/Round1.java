@@ -13,12 +13,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.util.LinkedList;
+
 public class Round1 extends AppCompatActivity {
 
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
     int currentPlayer = 0;
+    LinkedList<Integer[]> robberQue = new LinkedList<>();
+    LinkedList<Integer[]> troublemakerQue = new LinkedList<>();
 
     int countRoles(String role) {
         int total = 0;
@@ -42,7 +46,7 @@ public class Round1 extends AppCompatActivity {
         explanationTextView = (TextView) findViewById(R.id.explanation);
 
 
-        generateView(MainActivity.players[currentPlayer].role, 0);
+        generateView(MainActivity.players[currentPlayer].role, currentPlayer);
 
     }
 
@@ -120,10 +124,54 @@ public class Round1 extends AppCompatActivity {
         }
         @Override
         public void onClick(View view) {
-
+            if (MainActivity.players[currentPlayer].role.equals("Seer")) {
+                showInfo(MainActivity.players[view.getId()].name+"'s role is: \n"+MainActivity.players[view.getId()].role);
+                removePlayerButtons();
+                generateDoneButton();
+            }
+            else if (MainActivity.players[currentPlayer].role.equals("Robber")) {
+                showInfo("Your new role is: \n"+MainActivity.players[view.getId()].role);
+                queSwitch("Robber",currentPlayer,view.getId());
+                removePlayerButtons();
+                generateDoneButton();
+            }
+            else if (MainActivity.players[currentPlayer].role.equals("Troublemaker")) {
+                Integer[] tempIntegerArray = new Integer[2];
+                int numSelected = 0;
+                for (int i=0;i<MainActivity.players.length-1;i++) {
+                    if (((ToggleButton) findViewById(i)).isChecked()){//i!=currentPlayer&&((ToggleButton) findViewById(i)).isChecked()) {
+                        tempIntegerArray[numSelected]=i;
+                        numSelected++;
+                    }
+                }
+                if (numSelected==2){
+                    queSwitch("Troublemaker",tempIntegerArray[0],tempIntegerArray[1]);
+                    removePlayerButtons();
+                    generateDoneButton();
+                }
+            }
         }
     }
+    class nextPlayer implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            remove();
+            currentPlayer++;
+            generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+        }
+    }
+    void queSwitch(String role, int switcher, int switchWith) {
+        Integer[] tempIntegerArray = new Integer[]{switcher, switchWith};
+        if (role.equals("Robber")){
+            robberQue.add(tempIntegerArray);
+            Log.d("ROBBERQUE",robberQue+"");
+        }
+        else if (role.equals("Troublemaker")){
+            troublemakerQue.add(tempIntegerArray);
+            Log.d("TROUBLEMAKERQUE",troublemakerQue+"");
+        }
 
+    }
     void generateDoneButton()
     {
         View view = findViewById(R.id.round_1);
@@ -131,6 +179,7 @@ public class Round1 extends AppCompatActivity {
         doneB.setLayoutParams(new RelativeLayout.LayoutParams(2330, ViewGroup.LayoutParams.WRAP_CONTENT));
         doneB.setText("Done");
         doneB.setId(1+0); //doneButtonID = 1
+        doneB.setOnClickListener(new nextPlayer());
 
         ((RelativeLayout) view).addView(doneB);
 
@@ -139,7 +188,9 @@ public class Round1 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(0,0,0,20);
     }
-    void nextPlayer() {
+    void remove() {
+        removeInfo();
+        removePlayerButtons();
     }
 
     void generateView(String role, int playerNum)
@@ -326,8 +377,8 @@ public class Round1 extends AppCompatActivity {
                     ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
                 }
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
-                tempAddButton.setText(MainActivity.players[i].name + "");
-                tempAddButton.setId(i);
+                tempAddButton.setText("j="+j+", i="+i);//MainActivity.players[i].name + "");
+                tempAddButton.setId(j);
                 tempAddButton.setOnClickListener(new playerSelection(toggleButtons));
 
                 ((RelativeLayout) view).addView(tempAddButton);
@@ -344,18 +395,24 @@ public class Round1 extends AppCompatActivity {
                     params.topMargin = 15;
                 }
                 else if (j % 2 == 0) {
-                    params.addRule(RelativeLayout.BELOW, i - 2);
+                    params.addRule(RelativeLayout.BELOW, j - 2);
                     params.leftMargin = width/2-buttonWidth-15;
                     params.topMargin = 15;
                 }
                 else {
-                    params.addRule(RelativeLayout.BELOW, i - 2);
+                    params.addRule(RelativeLayout.BELOW, j - 2);
                     params.leftMargin = 15+width/2;
                     params.topMargin = 15;
                 }
                 j++;
             }
 
+        }
+    }
+    void removePlayerButtons() {
+        View view = findViewById(R.id.round_1);
+        for(int i = 0; i < MainActivity.players.length; i++) {
+            ((RelativeLayout) view).removeView(findViewById(i));
         }
     }
 }
