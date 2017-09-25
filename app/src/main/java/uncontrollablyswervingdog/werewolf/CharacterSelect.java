@@ -17,7 +17,7 @@ public class CharacterSelect extends AppCompatActivity
 {
     static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
     int[] amounts;
-    static String[] unusedRoles = new String[]{"Werewolf","Villager","Seer"};
+    static String[] unusedRoles;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -159,6 +159,28 @@ public class CharacterSelect extends AppCompatActivity
                     }
                     else
                     {
+                        avaliableRoles.put((String) keys[roleSelected], number);
+                    }
+                    assignedNumber++;
+                }
+            }
+            unusedRoles = new String[avaliableRoles.size()];
+            assignedNumber = 0;
+            numPlayers = 3;
+            while(assignedNumber!=numPlayers)
+            {
+                int chosenPlayer = assignedNumber;
+                if (MainActivity.players[chosenPlayer].role == null)
+                {
+                    Object[] keys = avaliableRoles.keySet().toArray(); // returns an array of keys
+                    Object[] nums = (Object[]) avaliableRoles.values().toArray(); // returns an array of values
+                    int roleSelected = Rand.nextInt(keys.length);
+                    String role = (String) keys[roleSelected];
+                    unusedRoles[chosenPlayer] = role;
+                    int number = (int) nums[roleSelected] - 1;
+                    if (number == 0) {
+                        avaliableRoles.remove(role);
+                    } else {
                         avaliableRoles.put((String) keys[roleSelected], number);
                     }
                     assignedNumber++;
