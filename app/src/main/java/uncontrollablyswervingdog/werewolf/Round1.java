@@ -45,8 +45,11 @@ public class Round1 extends AppCompatActivity {
         Log.d("PLAYERNAME",playerNameTextView+" "+R.id.playerName);
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
-
+        
         generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+        setContentView(R.layout.round_1_reveal);
+        TextView playerName = (TextView) findViewById(R.id.playerName);
+        playerName.setText(MainActivity.players[currentPlayer].name);
     }
 
     // Put this back in later, to stop the back button
@@ -136,7 +139,12 @@ public class Round1 extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             if (MainActivity.players[currentPlayer].role.equals("Seer")) {
-                showInfo(MainActivity.players[view.getId()].name+"'s role is: \n"+MainActivity.players[view.getId()].role);
+                if (view.getId()>=currentPlayer) {
+                    showInfo(MainActivity.players[view.getId()+1].name+"'s role is: \n"+MainActivity.players[view.getId()].role);
+                }
+                else {
+                    showInfo(MainActivity.players[view.getId()].name+"'s role is: \n"+MainActivity.players[view.getId()].role);
+                }
                 removePlayerButtons();
                 generateDoneButton();
             }
@@ -147,7 +155,12 @@ public class Round1 extends AppCompatActivity {
                 else {
                     showInfo("Your new role is: \n"+MainActivity.players[view.getId()].role);
                 }
-                queSwitch("Robber",currentPlayer,view.getId());
+                if (view.getId()>=currentPlayer) {
+                    queSwitch("Robber", currentPlayer, view.getId()+1);
+                }
+                else {
+                    queSwitch("Robber", currentPlayer, view.getId());
+                }
                 removePlayerButtons();
                 generateDoneButton();
             }
@@ -174,7 +187,6 @@ public class Round1 extends AppCompatActivity {
         }
     }
     void nextPlayer(View v) {
-        Log.d("TEST","TEST");
         setContentView(R.layout.round_1);
         playerNameTextView = (TextView) findViewById(R.id.playerName);
         roleTextView = (TextView) findViewById(R.id.role);
@@ -186,11 +198,9 @@ public class Round1 extends AppCompatActivity {
         Integer[] tempIntegerArray = new Integer[]{switcher, switchWith};
         if (role.equals("Robber")){
             robberQue.add(tempIntegerArray);
-            Log.d("ROBBERQUE",robberQue+"");
         }
         else if (role.equals("Troublemaker")){
             troublemakerQue.add(tempIntegerArray);
-            Log.d("TROUBLEMAKERQUE",troublemakerQue+"");
         }
     }
     void doSwitch() {
@@ -230,7 +240,6 @@ public class Round1 extends AppCompatActivity {
     void generateView(String role, int playerNum)
     {
         playerNameTextView.setText(MainActivity.players[playerNum].name);
-        Log.d("YES","ACUTALLY GETTING RUN");
         roleTextView.setText(MainActivity.players[playerNum].role);
         switch (role) {
             case "Werewolf":
