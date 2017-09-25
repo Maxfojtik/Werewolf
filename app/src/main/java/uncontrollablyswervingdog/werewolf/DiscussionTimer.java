@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class DiscussionTimer extends AppCompatActivity {
 
     int time = 5*60+1;
