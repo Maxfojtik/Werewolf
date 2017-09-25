@@ -3,7 +3,6 @@ package uncontrollablyswervingdog.werewolf;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,7 +44,7 @@ public class Round1 extends AppCompatActivity {
         Log.d("PLAYERNAME",playerNameTextView+" "+R.id.playerName);
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
-        
+
         generateView(MainActivity.players[currentPlayer].role, currentPlayer);
         setContentView(R.layout.round_1_reveal);
         TextView playerName = (TextView) findViewById(R.id.playerName);
@@ -53,8 +52,8 @@ public class Round1 extends AppCompatActivity {
     }
 
     // Put this back in later, to stop the back button
-//    @Override
-//    public void onBackPressed() {}
+    @Override
+    public void onBackPressed() {}
 
     class doneClick implements View.OnClickListener {
         @Override

@@ -30,9 +30,11 @@ public class DiscussionTimer extends AppCompatActivity {
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(updateTimer, 0, 1000);
-//        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-//        executor.scheduleAtFixedRate(changeTimer, 0, 1, SECONDS);
     }
+
+    @Override
+    public void onBackPressed() {}
+
     TimerTask updateTimer = new TimerTask() {
         @Override
         public void run() {
