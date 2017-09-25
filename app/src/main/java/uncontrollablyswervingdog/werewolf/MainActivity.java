@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     Button doneButton;
     Button delete1;
     static Player [] players;
+    int maxNameLength = 15;
 
     int numEditTexts = 1;
 
@@ -90,11 +91,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void timerButton(View v) {
-        Intent intent = new Intent(MainActivity.this, Timer.class);
-        startActivity(intent);
-    }
-
     public void addNameField() throws Exception {
 
         numEditTexts++;
@@ -159,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             players[0] = new Player("Player 1");
         }
         else {
-            players[0] = new Player(var1.getText()+"");
+            players[0] = new Player(shortenName(var1.getText()+""));
         }
         for (int i=2;i<players.length+1;i++) {
             EditText var = (EditText) findViewById(i+0);
@@ -167,8 +163,14 @@ public class MainActivity extends AppCompatActivity {
                 players[i-1] = new Player(var.getHint()+"");
             }
             else {
-                players[i-1] = new Player(var.getText()+"");
+                players[i-1] = new Player(shortenName(var.getText()+""));
             }
         }
+    }
+    String shortenName(String name) {
+        if (name.length()>maxNameLength) {
+        return name.substring(0,maxNameLength);
+        }
+        return name;
     }
 }

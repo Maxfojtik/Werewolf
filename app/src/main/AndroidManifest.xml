@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".CharacterSelect"></activity>
         <activity android:name=".Round1"></activity>
-        <activity android:name=".Timer"></activity>
+        <activity android:name=".DiscussionTimer"></activity>
+        <activity android:name=".RoleReveal"></activity>
     </application>
 
 </manifest>

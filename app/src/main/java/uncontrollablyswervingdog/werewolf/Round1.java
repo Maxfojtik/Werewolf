@@ -1,5 +1,6 @@
 package uncontrollablyswervingdog.werewolf;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
@@ -45,19 +46,29 @@ public class Round1 extends AppCompatActivity {
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
 
-
         generateView(MainActivity.players[currentPlayer].role, currentPlayer);
-
     }
 
     // Put this back in later, to stop the back button
 //    @Override
 //    public void onBackPressed() {}
 
-    class DoneClick implements View.OnClickListener {
+    class doneClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            //buttonstuff
+            if (currentPlayer+1!=MainActivity.players.length) {
+                remove();
+                currentPlayer++;
+                generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+                setContentView(R.layout.round_1_reveal);
+                TextView playerName = (TextView) findViewById(R.id.playerName);
+                playerName.setText(MainActivity.players[currentPlayer].name);
+            }
+            else {
+                doSwitch();
+                Intent intent = new Intent(Round1.this, DiscussionTimer.class);
+                startActivity(intent);
+            }
         }
     }
     class seerClick implements View.OnClickListener {
@@ -130,7 +141,12 @@ public class Round1 extends AppCompatActivity {
                 generateDoneButton();
             }
             else if (MainActivity.players[currentPlayer].role.equals("Robber")) {
-                showInfo("Your new role is: \n"+MainActivity.players[view.getId()].role);
+                if (view.getId()>=currentPlayer) {
+                    showInfo("Your new role is: \n"+MainActivity.players[view.getId()+1].role);
+                }
+                else {
+                    showInfo("Your new role is: \n"+MainActivity.players[view.getId()].role);
+                }
                 queSwitch("Robber",currentPlayer,view.getId());
                 removePlayerButtons();
                 generateDoneButton();
@@ -140,7 +156,12 @@ public class Round1 extends AppCompatActivity {
                 int numSelected = 0;
                 for (int i=0;i<MainActivity.players.length-1;i++) {
                     if (((ToggleButton) findViewById(i)).isChecked()){//i!=currentPlayer&&((ToggleButton) findViewById(i)).isChecked()) {
-                        tempIntegerArray[numSelected]=i;
+                        if (i>=currentPlayer) {
+                            tempIntegerArray[numSelected]=i+1;
+                        }
+                        else {
+                            tempIntegerArray[numSelected]=i;
+                        }
                         numSelected++;
                     }
                 }
@@ -152,14 +173,15 @@ public class Round1 extends AppCompatActivity {
             }
         }
     }
-    class nextPlayer implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            remove();
-            currentPlayer++;
-            generateView(MainActivity.players[currentPlayer].role, currentPlayer);
-        }
+    void nextPlayer(View v) {
+        Log.d("TEST","TEST");
+        setContentView(R.layout.round_1);
+        playerNameTextView = (TextView) findViewById(R.id.playerName);
+        roleTextView = (TextView) findViewById(R.id.role);
+        explanationTextView = (TextView) findViewById(R.id.explanation);
+        generateView(MainActivity.players[currentPlayer].role, currentPlayer);
     }
+
     void queSwitch(String role, int switcher, int switchWith) {
         Integer[] tempIntegerArray = new Integer[]{switcher, switchWith};
         if (role.equals("Robber")){
@@ -170,8 +192,20 @@ public class Round1 extends AppCompatActivity {
             troublemakerQue.add(tempIntegerArray);
             Log.d("TROUBLEMAKERQUE",troublemakerQue+"");
         }
-
     }
+    void doSwitch() {
+        for (Integer[] robberAction : robberQue) {
+            String tempRole = MainActivity.players[robberAction[0]].role;
+            MainActivity.players[robberAction[0]].role = MainActivity.players[robberAction[1]].role;
+            MainActivity.players[robberAction[1]].role = tempRole;
+        }
+        for (Integer[] troublemakerAction : troublemakerQue) {
+            String tempRole = MainActivity.players[troublemakerAction[0]].role;
+            MainActivity.players[troublemakerAction[0]].role = MainActivity.players[troublemakerAction[1]].role;
+            MainActivity.players[troublemakerAction[1]].role = tempRole;
+        }
+    }
+
     void generateDoneButton()
     {
         View view = findViewById(R.id.round_1);
@@ -179,7 +213,7 @@ public class Round1 extends AppCompatActivity {
         doneB.setLayoutParams(new RelativeLayout.LayoutParams(2330, ViewGroup.LayoutParams.WRAP_CONTENT));
         doneB.setText("Done");
         doneB.setId(1+0); //doneButtonID = 1
-        doneB.setOnClickListener(new nextPlayer());
+        doneB.setOnClickListener(new doneClick());
 
         ((RelativeLayout) view).addView(doneB);
 
@@ -196,6 +230,7 @@ public class Round1 extends AppCompatActivity {
     void generateView(String role, int playerNum)
     {
         playerNameTextView.setText(MainActivity.players[playerNum].name);
+        Log.d("YES","ACUTALLY GETTING RUN");
         roleTextView.setText(MainActivity.players[playerNum].role);
         switch (role) {
             case "Werewolf":
@@ -252,7 +287,6 @@ public class Round1 extends AppCompatActivity {
     void generateSeer() {
         explanationTextView.setText("You see another player's role or two unused roles.");
         showSeerOptions();
-//        showUnusedRoleButtons();
     }
     void generateRobber(int playerNum) {
         explanationTextView.setText("Take and view someone else's role and give them your own.");
@@ -262,12 +296,12 @@ public class Round1 extends AppCompatActivity {
         explanationTextView.setText("Change cards between two other players.");
         showPlayerButtons(playerNum, true);
     }
-    void generateMinion() { // done
+    void generateMinion() {
         explanationTextView.setText("You see who the werewolves are.");
         showWerewolves(100);
         generateDoneButton();
     }
-    void generateVillager() { //done lol
+    void generateVillager() {
         explanationTextView.setText("You do nothing at night.");
         generateDoneButton();
     }
@@ -377,10 +411,9 @@ public class Round1 extends AppCompatActivity {
                     ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
                 }
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
-                tempAddButton.setText("j="+j+", i="+i);//MainActivity.players[i].name + "");
+                tempAddButton.setText(MainActivity.players[i].name + "");
                 tempAddButton.setId(j);
                 tempAddButton.setOnClickListener(new playerSelection(toggleButtons));
-
                 ((RelativeLayout) view).addView(tempAddButton);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
 
@@ -395,7 +428,7 @@ public class Round1 extends AppCompatActivity {
                     params.topMargin = 15;
                 }
                 else if (j % 2 == 0) {
-                    params.addRule(RelativeLayout.BELOW, j - 2);
+                    params.addRule(RelativeLayout.BELOW, j - 1);
                     params.leftMargin = width/2-buttonWidth-15;
                     params.topMargin = 15;
                 }
