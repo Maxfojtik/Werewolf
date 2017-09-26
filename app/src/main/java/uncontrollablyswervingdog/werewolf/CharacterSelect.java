@@ -3,6 +3,7 @@ package uncontrollablyswervingdog.werewolf;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import java.util.Random;
 
 public class CharacterSelect extends AppCompatActivity
 {
-    static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber"};
+    static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber",      "Hunter", "Tanner", "Drunk", "Mason"};
     int[] amounts;
     static String[] unusedRoles;
     @Override
@@ -45,7 +46,7 @@ public class CharacterSelect extends AppCompatActivity
 
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) label.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            params.topMargin = 10;
+            params.topMargin = 5;
             if (i == 0) {
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             }else {
@@ -131,6 +132,7 @@ public class CharacterSelect extends AppCompatActivity
             int assignedNumber = 0;
             Rand = new Random();
             avaliableRoles.clear();
+            int totalRoles = 0;
             for(int i = 0; i < MainActivity.players.length; i++)
             {
                 MainActivity.players[i].role = null;
@@ -139,6 +141,7 @@ public class CharacterSelect extends AppCompatActivity
             {
                 if(amounts[i]>0)
                 {
+                    totalRoles += amounts[i];
                     avaliableRoles.put(roles[i], amounts[i]);
                 }
             }
@@ -153,6 +156,7 @@ public class CharacterSelect extends AppCompatActivity
                     String role = (String) keys[roleSelected];
                     MainActivity.players[chosenPlayer].role = role;
                     int number = (int) nums[roleSelected]-1;
+                    totalRoles--;
                     if(number==0)
                     {
                         avaliableRoles.remove(role);
@@ -164,17 +168,18 @@ public class CharacterSelect extends AppCompatActivity
                     assignedNumber++;
                 }
             }
-            unusedRoles = new String[avaliableRoles.size()];
+            unusedRoles = new String[totalRoles];
             assignedNumber = 0;
             numPlayers = 3;
             while(assignedNumber!=numPlayers)
             {
                 int chosenPlayer = assignedNumber;
-                if (MainActivity.players[chosenPlayer].role == null)
+                if (unusedRoles[chosenPlayer] == null)
                 {
                     Object[] keys = avaliableRoles.keySet().toArray(); // returns an array of keys
                     Object[] nums = (Object[]) avaliableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
+                    Log.d("Number#################", roleSelected+":"+keys[roleSelected]);
                     String role = (String) keys[roleSelected];
                     unusedRoles[chosenPlayer] = role;
                     int number = (int) nums[roleSelected] - 1;
