@@ -2,6 +2,7 @@ package uncontrollablyswervingdog.werewolf;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,9 +19,10 @@ public class MainActivity extends AppCompatActivity {
     Button newButton;
     Button doneButton;
     Button delete1;
+    static String the;
     static Player [] players;
+    static boolean firstTime = true;
     int maxNameLength = 15;
-
     int numEditTexts = 1;
 
     @Override
@@ -33,9 +35,32 @@ public class MainActivity extends AppCompatActivity {
         doneButton = (Button) findViewById(R.id.done_button);
         delete1 = (Button) findViewById(R.id.delete_button);
 
-        try {
-            addNameField();addNameField();addNameField();
-        } catch (Exception e){}
+        if (firstTime) {
+            try {
+                addNameField();
+                addNameField();
+                addNameField();
+            } catch (Exception e) {
+            }
+            firstTime = false;
+        }
+        else {
+            for (int i=0;i<players.length;i++) {
+                if(i==0) {
+                    name1.setText(players[0].name);
+                }
+                else {
+                    try {
+                        if (players[i].name.startsWith("Player ")) {
+                            addNameField("");
+                        } else {
+                            addNameField(players[i].name);
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
 
         newButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -110,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void addNameField() throws Exception {
+    public void addNameField() throws Exception {addNameField("");}
+    public void addNameField(String name) throws Exception {
 
         numEditTexts++;
 
@@ -120,7 +146,10 @@ public class MainActivity extends AppCompatActivity {
         EditText newNameBox = new EditText(this);
         newNameBox.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         newNameBox.setText("");
-        newNameBox.setHint("Player "+numEditTexts);
+        newNameBox.setHint("Player " + numEditTexts);
+        if (!name.equals("")) {
+            newNameBox.setText(name);
+        }
         newNameBox.setEms(12);
         newNameBox.setMaxLines(1);
         newNameBox.setSingleLine(true);
@@ -164,17 +193,20 @@ public class MainActivity extends AppCompatActivity {
         if (numEditTexts == 9) {
             newButton.setVisibility(View.INVISIBLE);
         }
-
     }
 
     public void getNames() {
         players = new Player [numEditTexts];
         EditText var1 = (EditText) findViewById(R.id.name1);
-        if ((var1.getText()+"").equals("")) {
+
+        the = var1.getText()+"";
+        if ((var1.getText()).equals("")) {
             players[0] = new Player("Player 1");
+            Log.d("TESTING1",var1.getText()+"");
         }
         else {
             players[0] = new Player(shortenName(var1.getText()+""));
+            Log.d("TESTING",var1.getText()+"");
         }
         for (int i=2;i<players.length+1;i++) {
             EditText var = (EditText) findViewById(i+0);
@@ -188,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
     }
     String shortenName(String name) {
         if (name.length()>maxNameLength) {
-        return name.substring(0,maxNameLength);
+            return name.substring(0,maxNameLength);
         }
         return name;
     }

@@ -49,7 +49,11 @@ public class Round1 extends AppCompatActivity {
         generateView(MainActivity.players[currentPlayer].role, currentPlayer);
         setContentView(R.layout.round_1_reveal);
         TextView playerName = (TextView) findViewById(R.id.playerName);
+        if (MainActivity.players[currentPlayer].name.equals("")) {
+            MainActivity.players[currentPlayer].name = "Player 1";
+        }
         playerName.setText(MainActivity.players[currentPlayer].name);
+
     }
 
     // Put this back in later, to stop the back button
@@ -65,7 +69,7 @@ public class Round1 extends AppCompatActivity {
                 generateView(MainActivity.players[currentPlayer].role, currentPlayer);
                 setContentView(R.layout.round_1_reveal);
                 TextView playerName = (TextView) findViewById(R.id.playerName);
-                playerName.setText(MainActivity.players[currentPlayer].name);
+                playerName.setText(MainActivity.players[currentPlayer].name); //+ MainActivity.the);
             }
             else {
                 doSwitch();

@@ -1,5 +1,6 @@
 package uncontrollablyswervingdog.werewolf;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -11,12 +12,14 @@ public class RoleReveal extends AppCompatActivity {
 
     TextView names;
     TextView roles;
+    TextView unusedRoles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.role_reveal);
         showRoles();
+        showUnusedRoles();
     }
 
     void showRoles() {
@@ -52,6 +55,29 @@ public class RoleReveal extends AppCompatActivity {
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params.topMargin = 60;
         params.rightMargin = 60;
+    }
+
+    void showUnusedRoles() {
+        View view = findViewById(R.id.roleReveal);
+
+        unusedRoles = new TextView(this);
+        unusedRoles.setId(10+0);
+        unusedRoles.setTextSize(25);
+        unusedRoles.setGravity(Gravity.CENTER);
+        String unused = "";
+        for (String role : CharacterSelect.unusedRoles) {
+            unused += role+" ";
+        }
+        unusedRoles.setText(unused);
+        ((RelativeLayout) view).addView(unusedRoles);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) unusedRoles.getLayoutParams();
+        params.addRule(RelativeLayout.ABOVE, R.id.restartButton);
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    }
+
+    void restart(View v) {
+        Intent intent = new Intent(RoleReveal.this, MainActivity.class);
+        startActivity(intent);
     }
 }
 
