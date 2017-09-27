@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,6 @@ public class Round1 extends AppCompatActivity {
         setContentView(R.layout.round_1);
 
         playerNameTextView = (TextView) findViewById(R.id.playerName);
-        Log.d("PLAYERNAME",playerNameTextView+" "+R.id.playerName);
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
 
@@ -54,9 +54,20 @@ public class Round1 extends AppCompatActivity {
         }
         playerName.setText(MainActivity.players[currentPlayer].name);
 
+        if (MainActivity.smallScreen) {
+            scaleForSmallScreen();
+        }
+
     }
 
-    // Put this back in later, to stop the back button
+    void scaleForSmallScreen() {
+        playerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
+        roleTextView.setTextSize(25);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) playerNameTextView.getLayoutParams();
+        params.topMargin = 10;
+    }
+
+    // Stops the back button
     @Override
     public void onBackPressed() {}
 
@@ -208,6 +219,10 @@ public class Round1 extends AppCompatActivity {
         roleTextView = (TextView) findViewById(R.id.role);
         explanationTextView = (TextView) findViewById(R.id.explanation);
         generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+        if (MainActivity.smallScreen) {
+            scaleForSmallScreen();
+        }
+
     }
 
     void queSwitch(String role, int switcher, int switchWith) {
@@ -252,7 +267,7 @@ public class Round1 extends AppCompatActivity {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) doneB.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        params.setMargins(0,0,0,20);
+        params.setMargins(15,0,15,15);
     }
     void remove() {
         removeInfo();
@@ -421,9 +436,11 @@ public class Round1 extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         int buttonWidth = 3 * width / 7;
+        int height = displayMetrics.heightPixels;
+        int buttonHeight = height/6;
 
         Button tempAddButton1 = new Button(this);
-        tempAddButton1.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
+        tempAddButton1.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
         tempAddButton1.setText("Player Roles");
         tempAddButton1.setId(0);
         tempAddButton1.setOnClickListener(new seerClick("player"));
@@ -434,7 +451,7 @@ public class Round1 extends AppCompatActivity {
         params1.topMargin = 15;
 
         Button tempAddButton2 = new Button(this);
-        tempAddButton2.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 350));
+        tempAddButton2.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
         tempAddButton2.setText("Unused Roles");
         tempAddButton2.setId(1+0);
         tempAddButton2.setOnClickListener(new seerClick("unused"));
@@ -455,6 +472,9 @@ public class Round1 extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         int buttonWidth = 2*width/7;
+        int height = displayMetrics.heightPixels;
+        int buttonHeight = height/6;
+
         for (int i=0;i<3;i++){
             Button tempAddButton = new Button(this);
             if (toggleButtons) {
@@ -463,7 +483,7 @@ public class Round1 extends AppCompatActivity {
                 ((ToggleButton) tempAddButton).setTextOff("Role "+(i+1));
             }
             tempAddButton.setOnClickListener(new unusedRoleClick(toggleButtons, drunk));
-            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
+            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
             tempAddButton.setText("Role "+(i+1));
             tempAddButton.setId(i);
             ((RelativeLayout) view).addView(tempAddButton);
@@ -487,6 +507,8 @@ public class Round1 extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         int buttonWidth = 2*width/5;
+        int height = displayMetrics.heightPixels;
+        int buttonHeight = height/10;
         int j=0; //j is used instead of i to fix the times when we skip the player whose turn it is
         for(int i = 0; i < MainActivity.players.length; i++)
         {
@@ -497,7 +519,7 @@ public class Round1 extends AppCompatActivity {
                     ((ToggleButton) tempAddButton).setTextOn(MainActivity.players[i].name + "");
                     ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
                 }
-                tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, 200));
+                tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
                 tempAddButton.setText(MainActivity.players[i].name + "");
                 tempAddButton.setId(j);
                 tempAddButton.setOnClickListener(new playerSelection(toggleButtons));

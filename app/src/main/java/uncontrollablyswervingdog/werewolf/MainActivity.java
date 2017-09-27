@@ -2,6 +2,7 @@ package uncontrollablyswervingdog.werewolf;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,9 +13,12 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.content.Intent;
 import android.view.View.OnClickListener;
+import android.widget.ScrollView;
 
 public class MainActivity extends AppCompatActivity {
 
+    ScrollView scrollView;
+    RelativeLayout scrollLayout;
     EditText name1;
     Button newButton;
     Button doneButton;
@@ -24,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     static boolean firstTime = true;
     int maxNameLength = 15;
     int numEditTexts = 1;
+    static boolean smallScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         newButton = (Button) findViewById(R.id.new_button);
         doneButton = (Button) findViewById(R.id.done_button);
         delete1 = (Button) findViewById(R.id.delete_button);
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
 
         if (firstTime) {
             try {
@@ -69,13 +76,30 @@ public class MainActivity extends AppCompatActivity {
             } catch(Exception e) {}
             }
         });
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        if (width <= 550) {
+            smallScreen = true;
+            scaleForSmallScreen();
+        }
+
     }
+
+    void scaleForSmallScreen() {
+        name1.setEms(8);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.name1).getLayoutParams();
+        params.topMargin = 15;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.gamemenu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -97,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
 
             View linearLayout =  findViewById(R.id.mainMenu);
             // Remove the editText and delButton
-            ((RelativeLayout) linearLayout).removeView(findViewById((v.getId()-10)));
-            ((RelativeLayout) linearLayout).removeView(findViewById((v.getId())));
+            scrollLayout.removeView(findViewById((v.getId()-10)));
+            scrollLayout.removeView(findViewById((v.getId())));
             numEditTexts--;
             // Set the next editText relative to the above one
             if (findViewById(v.getId()-9)!=null) {
@@ -150,12 +174,18 @@ public class MainActivity extends AppCompatActivity {
         if (!name.equals("")) {
             newNameBox.setText(name);
         }
-        newNameBox.setEms(12);
+
         newNameBox.setMaxLines(1);
         newNameBox.setSingleLine(true);
         newNameBox.setId(0+numEditTexts);
         newNameBox.requestFocus();
-        ((RelativeLayout) linearLayout).addView(newNameBox);
+        if (smallScreen) {
+            newNameBox.setEms(8);
+        }
+        else {
+            newNameBox.setEms(12);
+        }
+        scrollLayout.addView(newNameBox);
         // Adjust position for the new textEdit
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newNameBox.getLayoutParams();
         if (numEditTexts ==2) {
@@ -178,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             delButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
             delButtonParams.addRule(RelativeLayout.ALIGN_LEFT, delete1.getId());
             delButtonParams.addRule(RelativeLayout.ALIGN_RIGHT, delete1.getId());
-            ((RelativeLayout) linearLayout).addView(delButton);
+            scrollLayout.addView(delButton);
         }
 
         // Adjust position for the done button
@@ -202,11 +232,9 @@ public class MainActivity extends AppCompatActivity {
         the = var1.getText()+"";
         if ((var1.getText()).equals("")) {
             players[0] = new Player("Player 1");
-            Log.d("TESTING1",var1.getText()+"");
         }
         else {
             players[0] = new Player(shortenName(var1.getText()+""));
-            Log.d("TESTING",var1.getText()+"");
         }
         for (int i=2;i<players.length+1;i++) {
             EditText var = (EditText) findViewById(i+0);

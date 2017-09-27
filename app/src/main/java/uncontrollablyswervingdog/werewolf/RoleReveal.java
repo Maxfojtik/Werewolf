@@ -20,6 +20,25 @@ public class RoleReveal extends AppCompatActivity {
         setContentView(R.layout.role_reveal);
         showRoles();
         showUnusedRoles();
+        if (MainActivity.smallScreen) {
+            scaleForSmallScreen();
+        }
+    }
+
+    void scaleForSmallScreen() {
+        names.setTextSize(25);
+        names.setLineSpacing(10f, 1f);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) names.getLayoutParams();
+        params.topMargin = 12;
+        params.leftMargin = 12;
+
+        roles.setTextSize(25);
+        roles.setLineSpacing(10f, 1f);
+        params = (RelativeLayout.LayoutParams) roles.getLayoutParams();
+        params.topMargin = 12;
+        params.rightMargin = 12;
+
+        unusedRoles.setTextSize(20);
     }
 
     void showRoles() {

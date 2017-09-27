@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.util.DisplayMetrics;
 import java.util.HashMap;
@@ -19,11 +20,17 @@ public class CharacterSelect extends AppCompatActivity
     static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber",      "Hunter", "Tanner", "Drunk", "Mason"};
     int[] amounts;
     static String[] unusedRoles;
+    ScrollView scrollView;
+    RelativeLayout scrollLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_select);
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
+
         generateStuff();
     }
     void generateStuff()
@@ -41,8 +48,13 @@ public class CharacterSelect extends AppCompatActivity
             label.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             label.setText(roles[i]);
             label.setId(i+400);
-            label.setTextSize(40);
-            ((RelativeLayout) relLayout).addView(label);
+            if (MainActivity.smallScreen && roles[i].length() > 9) {
+                label.setTextSize(34);
+            }
+            else {
+                label.setTextSize(40);
+            }
+            scrollLayout.addView(label);//((RelativeLayout) relLayout).addView(label);
 
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) label.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -59,7 +71,7 @@ public class CharacterSelect extends AppCompatActivity
             tempSubButton.setText("-");
             tempSubButton.setId(i+200); //add is 100, sub is 200, Number is 300, Label is 400
 
-            ((RelativeLayout) relLayout).addView(tempSubButton);
+            scrollLayout.addView(tempSubButton);//((RelativeLayout) relLayout).addView(tempSubButton);
 
             params = (RelativeLayout.LayoutParams) tempSubButton.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
@@ -71,7 +83,7 @@ public class CharacterSelect extends AppCompatActivity
             numberLabel.setText("0");
             numberLabel.setId(i+300);
             numberLabel.setTextSize(40);
-            ((RelativeLayout) relLayout).addView(numberLabel);
+            scrollLayout.addView(numberLabel);//((RelativeLayout) relLayout).addView(numberLabel);
 
             params = (RelativeLayout.LayoutParams) numberLabel.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_TOP, tempSubButton.getId());
@@ -86,7 +98,7 @@ public class CharacterSelect extends AppCompatActivity
             tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
             tempSubButton.setOnClickListener(new onClick(numberLabel.getId(), i, -1));
 
-            ((RelativeLayout) relLayout).addView(tempAddButton);
+            scrollLayout.addView(tempAddButton);//((RelativeLayout) relLayout).addView(tempAddButton);
 
             params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
@@ -100,10 +112,11 @@ public class CharacterSelect extends AppCompatActivity
         doneButton.setId(0+500);
         doneButton.setVisibility(View.INVISIBLE);
         doneButton.setOnClickListener(new doneClick());
-        ((RelativeLayout) relLayout).addView(doneButton);
+        scrollLayout.addView(doneButton);//((RelativeLayout) relLayout).addView(doneButton);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
 //        params.addRule(RelativeLayout.ALIGN_RIGHT, (roles.length-1)+200);
 //        params.addRule(RelativeLayout.ALIGN_LEFT, (roles.length-1)+400);
+        params.addRule(RelativeLayout.BELOW, roles.length + 399);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
@@ -115,7 +128,7 @@ public class CharacterSelect extends AppCompatActivity
         numLeft.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         numLeft.setText(MainActivity.players.length+3+"");
         numLeft.setGravity(Gravity.CENTER);
-        ((RelativeLayout) relLayout).addView(numLeft);
+        scrollLayout.addView(numLeft);//((RelativeLayout) relLayout).addView(numLeft);
         params = (RelativeLayout.LayoutParams) numLeft.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, R.id.charSelect);
