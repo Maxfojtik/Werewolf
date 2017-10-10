@@ -17,8 +17,9 @@ import java.util.Random;
 
 public class CharacterSelect extends AppCompatActivity
 {
-    static String[] roles = new String[]{"Werewolf", "Minion", "Villager", "Seer", "Troublemaker", "Robber",      "Hunter", "Tanner", "Drunk", "Mason"};
+    static String[] roles = new String[]{"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
     int[] amounts;
+    static int numRounds;
     static String[] unusedRoles;
     ScrollView scrollView;
     RelativeLayout scrollLayout;
@@ -135,7 +136,7 @@ public class CharacterSelect extends AppCompatActivity
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
     }
     Random Rand;
-    HashMap<String, Integer> avaliableRoles = new HashMap<String, Integer>();
+    HashMap<String, Integer> availableRoles = new HashMap<String, Integer>();
     class doneClick implements View.OnClickListener
     {
         @Override
@@ -144,7 +145,7 @@ public class CharacterSelect extends AppCompatActivity
             int numPlayers = MainActivity.players.length;
             int assignedNumber = 0;
             Rand = new Random();
-            avaliableRoles.clear();
+            availableRoles.clear();
             int totalRoles = 0;
             for(int i = 0; i < MainActivity.players.length; i++)
             {
@@ -155,7 +156,7 @@ public class CharacterSelect extends AppCompatActivity
                 if(amounts[i]>0)
                 {
                     totalRoles += amounts[i];
-                    avaliableRoles.put(roles[i], amounts[i]);
+                    availableRoles.put(roles[i], amounts[i]);
                 }
             }
             while(assignedNumber!=numPlayers)
@@ -163,20 +164,21 @@ public class CharacterSelect extends AppCompatActivity
                 int chosenPlayer = Rand.nextInt(numPlayers);
                 if(MainActivity.players[chosenPlayer].role==null)
                 {
-                    Object[] keys = avaliableRoles.keySet().toArray(); // returns an array of keys
-                    Object[] nums = (Object[]) avaliableRoles.values().toArray(); // returns an array of values
+                    Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
+                    Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
                     String role = (String) keys[roleSelected];
                     MainActivity.players[chosenPlayer].role = role;
+                    MainActivity.players[chosenPlayer].originalRole = role;
                     int number = (int) nums[roleSelected]-1;
                     totalRoles--;
                     if(number==0)
                     {
-                        avaliableRoles.remove(role);
+                        availableRoles.remove(role);
                     }
                     else
                     {
-                        avaliableRoles.put((String) keys[roleSelected], number);
+                        availableRoles.put((String) keys[roleSelected], number);
                     }
                     assignedNumber++;
                 }
@@ -189,23 +191,30 @@ public class CharacterSelect extends AppCompatActivity
                 int chosenPlayer = assignedNumber;
                 if (unusedRoles[chosenPlayer] == null)
                 {
-                    Object[] keys = avaliableRoles.keySet().toArray(); // returns an array of keys
-                    Object[] nums = (Object[]) avaliableRoles.values().toArray(); // returns an array of values
+                    Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
+                    Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
                     Log.d("Number#################", roleSelected+":"+keys[roleSelected]);
                     String role = (String) keys[roleSelected];
                     unusedRoles[chosenPlayer] = role;
                     int number = (int) nums[roleSelected] - 1;
                     if (number == 0) {
-                        avaliableRoles.remove(role);
+                        availableRoles.remove(role);
                     } else {
-                        avaliableRoles.put((String) keys[roleSelected], number);
+                        availableRoles.put((String) keys[roleSelected], number);
                     }
                     assignedNumber++;
                 }
             }
-            Intent intent = new Intent(CharacterSelect.this, Round1.class);
-            startActivity(intent);
+            numRounds = checkNumRounds(availableRoles);
+            if (numRounds==1) {
+                Intent intent = new Intent(CharacterSelect.this, Round1of1.class);
+                startActivity(intent);
+            }
+            else {
+                Intent intent = new Intent(CharacterSelect.this, Round1.class);
+                startActivity(intent);
+            }
         }
     }
     class onClick implements View.OnClickListener
@@ -250,5 +259,15 @@ public class CharacterSelect extends AppCompatActivity
                 }
             }
         }
+    }
+    static int checkNumRounds(HashMap<String, Integer> availableRoles) {
+        int roundsNeeded = 1;
+//        for (String role : availableRoles.keySet().toArray()) {
+//            roundsNeeded++;
+//            break
+//        }
+        roundsNeeded++;
+        Log.d("ROUNDSNEEDED",roundsNeeded+"");
+        return roundsNeeded;
     }
 }

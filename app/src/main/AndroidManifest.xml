@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CharacterSelect" />
+        <activity android:name=".Round1of1" />
         <activity android:name=".Round1" />
         <activity android:name=".DiscussionTimer" />
         <activity android:name=".RoleReveal" />

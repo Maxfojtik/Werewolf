@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     int maxNameLength = 15;
     int numEditTexts = 1;
     static boolean smallScreen;
+    int maxPlayers=10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,8 +165,6 @@ public class MainActivity extends AppCompatActivity {
 
         numEditTexts++;
 
-        View linearLayout =  findViewById(R.id.mainMenu);
-
         // Make the new textEdit
         EditText newNameBox = new EditText(this);
         newNameBox.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -219,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout.LayoutParams newButtonParams = (RelativeLayout.LayoutParams) newButton.getLayoutParams();
         newButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
 
-        // Caps number of players at 10
-        if (numEditTexts == 9) {
+        // Caps number of players
+        if (numEditTexts == maxPlayers) {
             newButton.setVisibility(View.INVISIBLE);
         }
     }
