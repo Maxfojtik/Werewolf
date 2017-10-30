@@ -152,7 +152,7 @@ public class Round1of1 extends AppCompatActivity {
                 {
                     drunkQue.add(new Integer[]{view.getId(), currentPlayer});
                     removeUnusedRoleButtons();
-                    showInfo("You try to remember what you are now, but you are drunk");
+                    showInfo("You switched with role "+(view.getId()+1));
                     generateDoneButton();
                 }
             }
