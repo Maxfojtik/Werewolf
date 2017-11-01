@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     static Player [] players;
     static boolean firstTime = true;
     int maxNameLength = 15;
-    int numEditTexts = 1;
+    int numEditTexts = 0;
     static boolean smallScreen;
     int maxPlayers=10;
     int width;
@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         newEditText.setMaxLines(1);
         newEditText.setSingleLine(true);
         newEditText.setId(0+numEditTexts);
+        Log.d("SETTING ID TO", numEditTexts+"");
         newEditText.requestFocus();
         if (smallScreen) {
             newEditText.setEms(8);
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 //            players[0] = new Player(shortenName(var1.getText()+""));
 //        }
         for (int i=0;i<players.length;i++) {
+            Log.d("TESTING",i+"");
             EditText var = (EditText) findViewById(i+1);
             if ((var.getText()+"").equals("")) {
                 players[i] = new Player(var.getHint()+"");
