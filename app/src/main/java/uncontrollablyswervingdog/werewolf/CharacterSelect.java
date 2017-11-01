@@ -17,7 +17,8 @@ import java.util.Random;
 
 public class CharacterSelect extends AppCompatActivity
 {
-    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};//{"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
+    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};
+//    static String[] roles = new String[]{"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
     int[] amounts;
     static int numRounds;
     static String[] unusedRoles;

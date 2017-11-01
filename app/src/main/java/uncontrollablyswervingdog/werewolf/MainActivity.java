@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     ScrollView scrollView;
     RelativeLayout scrollLayout;
-    EditText name1;
+//    EditText name1;
     Button newButton;
     Button doneButton;
     Button delete1;
@@ -30,42 +30,35 @@ public class MainActivity extends AppCompatActivity {
     int numEditTexts = 1;
     static boolean smallScreen;
     int maxPlayers=10;
+    int width;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        name1 = (EditText) findViewById(R.id.name1);
+//        name1 = (EditText) findViewById(R.id.name1);
         newButton = (Button) findViewById(R.id.new_button);
         doneButton = (Button) findViewById(R.id.done_button);
-        delete1 = (Button) findViewById(R.id.delete_button);
+//        delete1 = (Button) findViewById(R.id.delete_button);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
 
+        // If this is the first round, make more name fields
         if (firstTime) {
-            try {
-                addNameField();
-                addNameField();
-                addNameField();
-            } catch (Exception e) {
-            }
+            addNameField();
+            addNameField();
+            addNameField();
+            addNameField();
             firstTime = false;
         }
+        // If this is not the first time playing, fill in names
         else {
             for (int i=0;i<players.length;i++) {
-                if(i==0) {
-                    name1.setText(players[0].name);
-                }
-                else {
-                    try {
-                        if (players[i].name.startsWith("Player ")) {
-                            addNameField("");
-                        } else {
-                            addNameField(players[i].name);
-                        }
-                    } catch (Exception e) {
-                    }
+                if (players[i].name.startsWith("Player ")) {
+                    addNameField("");
+                } else {
+                    addNameField(players[i].name);
                 }
             }
         }
@@ -80,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
+        width = displayMetrics.widthPixels;
         if (width <= 550) {
             smallScreen = true;
             scaleForSmallScreen();
@@ -89,9 +82,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void scaleForSmallScreen() {
-        name1.setEms(8);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.name1).getLayoutParams();
-        params.topMargin = 15;
+
     }
 
     @Override
@@ -114,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     // For clicking the delete button
-    private OnClickListener onClickListener = new OnClickListener() {
+    private OnClickListener onDeleteClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
 
@@ -139,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
                 delButton2.setId(i+9);
                 if (findViewById(i+1)!=null) {
                     RelativeLayout.LayoutParams lowerEditTextParams = (RelativeLayout.LayoutParams) findViewById(i+1).getLayoutParams();
+                    if (i==2) {
+                        lowerEditTextParams.addRule(RelativeLayout.BELOW, i-1);
+                    }
                     lowerEditTextParams.addRule(RelativeLayout.BELOW, i-1);
                 }
             }
@@ -160,55 +154,48 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void addNameField() throws Exception {addNameField("");}
-    public void addNameField(String name) throws Exception {
+    public void addNameField() {addNameField("");}
+    public void addNameField(String name) {
 
         numEditTexts++;
 
         // Make the new textEdit
-        EditText newNameBox = new EditText(this);
-        newNameBox.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-        newNameBox.setText("");
-        newNameBox.setHint("Player " + numEditTexts);
+        EditText newEditText = new EditText(this);
+        newEditText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+        newEditText.setHint("Player " + numEditTexts);
+        newEditText.setText("");
         if (!name.equals("")) {
-            newNameBox.setText(name);
+            newEditText.setText(name);
         }
 
-        newNameBox.setMaxLines(1);
-        newNameBox.setSingleLine(true);
-        newNameBox.setId(0+numEditTexts);
-        newNameBox.requestFocus();
+        newEditText.setMaxLines(1);
+        newEditText.setSingleLine(true);
+        newEditText.setId(0+numEditTexts);
+        newEditText.requestFocus();
         if (smallScreen) {
-            newNameBox.setEms(8);
+            newEditText.setEms(8);
         }
         else {
-            newNameBox.setEms(12);
+            newEditText.setEms(12);
         }
-        scrollLayout.addView(newNameBox);
+        scrollLayout.addView(newEditText);
         // Adjust position for the new textEdit
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newNameBox.getLayoutParams();
-        if (numEditTexts ==2) {
-            params.addRule(RelativeLayout.BELOW, name1.getId());
-        }else {
-            params.addRule(RelativeLayout.BELOW, numEditTexts-1);
-        }
-        params.addRule(RelativeLayout.ALIGN_LEFT, name1.getId());
-        params.addRule(RelativeLayout.ALIGN_RIGHT, name1.getId());
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newEditText.getLayoutParams();
+        params.addRule(RelativeLayout.BELOW, numEditTexts-1);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params.leftMargin = 10;
 
-        // Make the new del button if needed
-        if (numEditTexts > 4) {
-            Button delButton = new Button(this);
-            delButton.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-            delButton.setText("-");
-            delButton.setId((10+numEditTexts));
-            delButton.setOnClickListener(onClickListener);
+        // Makes the delete button
+        Button delButton = new Button(this);
+        delButton.setText("-");
+        delButton.setId((10+numEditTexts));
+        delButton.setOnClickListener(onDeleteClickListener);
+        delButton.setWidth(35);
 
-            RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) delButton.getLayoutParams();
-            delButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
-            delButtonParams.addRule(RelativeLayout.ALIGN_LEFT, delete1.getId());
-            delButtonParams.addRule(RelativeLayout.ALIGN_RIGHT, delete1.getId());
-            scrollLayout.addView(delButton);
-        }
+        scrollLayout.addView(delButton);
+        RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) delButton.getLayoutParams();
+        delButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
+        delButtonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
         // Adjust position for the done button
         RelativeLayout.LayoutParams doneButtonParams = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
@@ -217,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         // Adjust position for the new button
         RelativeLayout.LayoutParams newButtonParams = (RelativeLayout.LayoutParams) newButton.getLayoutParams();
         newButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
+        newButtonParams.addRule(RelativeLayout.LEFT_OF, numEditTexts);
 
         // Caps number of players
         if (numEditTexts == maxPlayers) {
@@ -226,22 +214,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void getNames() {
         players = new Player [numEditTexts];
-        EditText var1 = (EditText) findViewById(R.id.name1);
-
-        the = var1.getText()+"";
-        if ((var1.getText()).equals("")) {
-            players[0] = new Player("Player 1");
-        }
-        else {
-            players[0] = new Player(shortenName(var1.getText()+""));
-        }
-        for (int i=2;i<players.length+1;i++) {
-            EditText var = (EditText) findViewById(i+0);
+//        EditText var1 = (EditText) findViewById(R.id.name1);
+//
+//        the = var1.getText()+"";
+//        if ((var1.getText()).equals("")) {
+//            players[0] = new Player("Player 1");
+//        }
+//        else {
+//            players[0] = new Player(shortenName(var1.getText()+""));
+//        }
+        for (int i=0;i<players.length;i++) {
+            EditText var = (EditText) findViewById(i+1);
             if ((var.getText()+"").equals("")) {
-                players[i-1] = new Player(var.getHint()+"");
+                players[i] = new Player(var.getHint()+"");
             }
             else {
-                players[i-1] = new Player(shortenName(var.getText()+""));
+                players[i] = new Player(shortenName(var.getText()+""));
             }
         }
     }
