@@ -265,6 +265,7 @@ public class CharacterSelect extends AppCompatActivity
     {
         for (Object role : availableRoles.keySet().toArray())
         {
+            Log.d("asdfasdfasdf###########", (String)role);
             if(role.equals("Insomniac") || role.equals("Doppelganger"))
             {
                 return 2;
