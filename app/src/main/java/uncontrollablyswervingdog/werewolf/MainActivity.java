@@ -19,11 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     ScrollView scrollView;
     RelativeLayout scrollLayout;
-//    EditText name1;
     Button newButton;
     Button doneButton;
-    Button delete1;
-    static String the;
     static Player [] players;
     static boolean firstTime = true;
     int maxNameLength = 15;
@@ -37,10 +34,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        name1 = (EditText) findViewById(R.id.name1);
         newButton = (Button) findViewById(R.id.new_button);
         doneButton = (Button) findViewById(R.id.done_button);
-//        delete1 = (Button) findViewById(R.id.delete_button);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
 
@@ -65,9 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         newButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            try {
                 addNameField();
-            } catch(Exception e) {}
             }
         });
 
@@ -174,10 +167,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("SETTING ID TO", numEditTexts+"");
         newEditText.requestFocus();
         if (smallScreen) {
-            newEditText.setEms(8);
+            newEditText.setEms(2);
+            newEditText.setMaxEms(2);
         }
         else {
-            newEditText.setEms(12);
+            newEditText.setEms(3);
+            newEditText.setMaxEms(3);
         }
         scrollLayout.addView(newEditText);
         // Adjust position for the new textEdit
@@ -191,11 +186,12 @@ public class MainActivity extends AppCompatActivity {
         delButton.setText("-");
         delButton.setId((10+numEditTexts));
         delButton.setOnClickListener(onDeleteClickListener);
-        delButton.setWidth(35);
+        delButton.setWidth(10);
 
         scrollLayout.addView(delButton);
         RelativeLayout.LayoutParams delButtonParams = (RelativeLayout.LayoutParams) delButton.getLayoutParams();
         delButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
+        delButtonParams.addRule(RelativeLayout.ALIGN_TOP, numEditTexts);
         delButtonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
         // Adjust position for the done button
@@ -205,12 +201,15 @@ public class MainActivity extends AppCompatActivity {
         // Adjust position for the new button
         RelativeLayout.LayoutParams newButtonParams = (RelativeLayout.LayoutParams) newButton.getLayoutParams();
         newButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, numEditTexts);
-        newButtonParams.addRule(RelativeLayout.LEFT_OF, numEditTexts);
+        newButtonParams.addRule(RelativeLayout.LEFT_OF, 1);
 
         // Caps number of players
         if (numEditTexts == maxPlayers) {
             newButton.setVisibility(View.INVISIBLE);
         }
+
+        // Makes the first delete button not visible
+        (findViewById(11+0)).setVisibility(View.GONE);
     }
 
     public void getNames() {
