@@ -160,6 +160,7 @@ public class CharacterSelect extends AppCompatActivity
                     availableRoles.put(roles[i], amounts[i]);
                 }
             }
+            numRounds = checkNumRounds(availableRoles);
             while(assignedNumber!=numPlayers)
             {
                 int chosenPlayer = Rand.nextInt(numPlayers);
@@ -207,7 +208,6 @@ public class CharacterSelect extends AppCompatActivity
                     assignedNumber++;
                 }
             }
-            numRounds = checkNumRounds(availableRoles);
             if (numRounds==1) {
                 Intent intent = new Intent(CharacterSelect.this, Round1of1.class);
                 startActivity(intent);
@@ -261,14 +261,16 @@ public class CharacterSelect extends AppCompatActivity
             }
         }
     }
-    static int checkNumRounds(HashMap<String, Integer> availableRoles) {
-        int roundsNeeded = 1;
-//        for (String role : availableRoles.keySet().toArray()) {
-//            roundsNeeded++;
-//            break
-//        }
-//        roundsNeeded++;
-        Log.d("ROUNDSNEEDED",roundsNeeded+"");
-        return roundsNeeded;
+    static int checkNumRounds(HashMap<String, Integer> availableRoles)
+    {
+        for (Object role : availableRoles.keySet().toArray())
+        {
+            Log.d("asdfasdfasdf###########", (String)role);
+            if(role.equals("Insomniac") || role.equals("Doppelganger"))
+            {
+                return 2;
+            }
+        }
+        return 1;
     }
 }
