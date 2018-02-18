@@ -1,10 +1,12 @@
 package uncontrollablyswervingdog.werewolf;
 
+
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -16,20 +18,26 @@ import android.widget.ToggleButton;
 
 import java.util.LinkedList;
 
+@SuppressLint({"ResourceType","SetTextI18n"})
 public class Round1of1 extends AppCompatActivity {
 
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
     int currentPlayer = 0;
-    LinkedList<Integer[]> robberQue = new LinkedList<>();
-    LinkedList<Integer[]> troublemakerQue = new LinkedList<>();
-    LinkedList<Integer[]> drunkQue = new LinkedList<>();
+    LinkedList<int[]> robberQue = new LinkedList<>();
+    LinkedList<int[]> troublemakerQue = new LinkedList<>();
+    LinkedList<int[]> drunkQue = new LinkedList<>();
 
+    /**
+     * Counts the roles of a type
+     * @param role the role type to count
+     * @return number of roles of the input type
+     */
     int countRoles(String role) {
         int total = 0;
         for (int i = 0; i < MainActivity.players.length; i++) {
-            if (MainActivity.players[i].role.equals(role)) {
+            if (MainActivity.players[i].originalRole.equals(role)) {
                 total++;
             }
         }
@@ -38,21 +46,21 @@ public class Round1of1 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Set the xml file to round_1
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.round_1_reveal);
         setContentView(R.layout.round_1);
 
-        playerNameTextView = (TextView) findViewById(R.id.playerName);
-        roleTextView = (TextView) findViewById(R.id.role);
-        explanationTextView = (TextView) findViewById(R.id.explanation);
+        // Initialize the text views in the round_1 xml file for editing later
+        playerNameTextView = findViewById(R.id.playerName);
+        roleTextView = findViewById(R.id.role);
+        explanationTextView = findViewById(R.id.explanation);
 
-        generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+        generateView();
         setContentView(R.layout.round_1_reveal);
-        TextView playerName = (TextView) findViewById(R.id.playerName);
         if (MainActivity.players[currentPlayer].name.equals("")) {
             MainActivity.players[currentPlayer].name = "Player 1";
         }
-        playerName.setText(MainActivity.players[currentPlayer].name);
+        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
 
         if (MainActivity.smallScreen) {
             scaleForSmallScreen();
@@ -60,6 +68,9 @@ public class Round1of1 extends AppCompatActivity {
 
     }
 
+    /**
+     * Changes the values of a couple sizes so it fits on a smaller screen better
+     */
     void scaleForSmallScreen() {
         playerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
         roleTextView.setTextSize(25);
@@ -67,20 +78,20 @@ public class Round1of1 extends AppCompatActivity {
         params.topMargin = 10;
     }
 
-    // Stops the back button
-    @Override
-    public void onBackPressed() {}
 
+    /**
+     * Button listener for finishing someone's turn. This decides what to do
+     */
     class doneClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            if (currentPlayer+1!=MainActivity.players.length) {
-                remove();
+            if (currentPlayer+1!=MainActivity.players.length) { // Ensures it's not the last player
+//                remove(); // I'm not sure why this was here. Maybe it's important?
                 currentPlayer++;
-                generateView(MainActivity.players[currentPlayer].role, currentPlayer);
+                generateView();
                 setContentView(R.layout.round_1_reveal);
-                TextView playerName = (TextView) findViewById(R.id.playerName);
-                playerName.setText(MainActivity.players[currentPlayer].name); //+ MainActivity.the);
+                TextView playerName = findViewById(R.id.playerName);
+                playerName.setText(MainActivity.players[currentPlayer].name);
             }
             else {
                 doSwitch();
@@ -89,9 +100,13 @@ public class Round1of1 extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Listener for when the seer decides to pick a player's role or an unused role
+     */
     class seerClick implements View.OnClickListener {
         String selection;
-        public seerClick(String selection)
+        seerClick(String selection)
         {
             this.selection = selection;
         }
@@ -99,160 +114,153 @@ public class Round1of1 extends AppCompatActivity {
         public void onClick(View view) {
             removeSeerOptions();
             if (selection.equals("player")) {
-                showPlayerButtons(currentPlayer);
+                showPlayerButtons();
             }
             else {
-                showUnusedRoleButtons(true, false);
+                showUnusedRoleButtons(true);
             }
         }
     }
+
+    /**
+     * Listener for when you click on an unused role button for any reason
+     */
     class unusedRoleClick implements View.OnClickListener {
-        boolean toggleButtons;
-        boolean drunk;
-        public unusedRoleClick(boolean toggleButtons, boolean drunk)
+        String role;
+        unusedRoleClick(String role)
         {
-            this.toggleButtons = toggleButtons;
-            this.drunk = drunk;
+            this.role = role;
         }
         @Override
-        public void onClick(View view)
-        {
-            int numChecked = 0;
-            int notChecked=0;
-            if (toggleButtons) {
-                for (int i=0; i<3;i++) {
-                    if (((ToggleButton) findViewById(i)).isChecked()) {
-                        numChecked ++;
+        public void onClick(View view) {
+            switch (role) {
+                case "Seer":
+                    // First checks whether, if the buttons are togglebuttons, one or two have been clicked
+                    int numChecked = 0;
+                    int notChecked = 0;
+                    for (int i = 0; i < 3; i++) {
+                        if (((ToggleButton) findViewById(i)).isChecked()) {
+                            numChecked++;
+                        } else {
+                            notChecked = i; // Instead of trying to remember the checked things, just remember the not checked one
+                        }
                     }
-                    else {
-                        notChecked = i; // Instead of trying to remember the checked things, just remember the not checked one
+                    if (numChecked > 1) {
+                        StringBuilder rolesSeen = new StringBuilder();
+                        for (int i = 0; i < 3; i++) {
+                            if (((ToggleButton) findViewById(i)).isChecked() && i != notChecked) {
+                                rolesSeen.append("\n").append(CharacterSelect.unusedRoles[i]);
+                            }
+                        }
+                        removeUnusedRoleButtons();
+                        showInfo("You saw: " + rolesSeen);
+                        generateDoneButton();
                     }
-                }
-            }
-            if (numChecked > 1) {
-                String rolesSeen = "";
-                for (int i=0; i<3;i++) {
-                    if (((ToggleButton) findViewById(i)).isChecked()&&i!=notChecked) {
-                        rolesSeen += "\n"+CharacterSelect.unusedRoles[i];
-                    }
-                }
-                removeUnusedRoleButtons();
-                showInfo("You saw: "+rolesSeen);
-                generateDoneButton();
-            }
-            else if (!toggleButtons) {
-                if(!drunk) {
+                    break;
+
+                case "Werewolf":
                     String rolesSeen = "";
                     rolesSeen += "\n" + CharacterSelect.unusedRoles[view.getId()];
                     removeUnusedRoleButtons();
                     showInfo("You saw: " + rolesSeen);
                     generateDoneButton();
-                }
-                else
-                {
-                    drunkQue.add(new Integer[]{view.getId(), currentPlayer});
+                    break;
+
+                case "Drunk":
+                    drunkQue.add(new int[]{view.getId(), currentPlayer});
                     removeUnusedRoleButtons();
-                    showInfo("You switched with role "+(view.getId()+1));
+                    showInfo("You switched with role " + ((view.getId()) + 1));
                     generateDoneButton();
-                }
+                    break;
+
             }
         }
     }
+
+    /**
+     * Listener for selecting a player
+     */
     class playerSelection implements View.OnClickListener {
-        boolean toggleButtons;
-        public playerSelection(boolean toggleButtons) {
-            this.toggleButtons = toggleButtons;
-        }
         @Override
         public void onClick(View view) {
-            if (MainActivity.players[currentPlayer].role.equals("Seer")) {
-                if (view.getId()>=currentPlayer) {
-                    showInfo(MainActivity.players[view.getId()+1].name+"'s role is: \n"+MainActivity.players[view.getId()+1].role);
-                }
-                else {
-                    showInfo(MainActivity.players[view.getId()].name+"'s role is: \n"+MainActivity.players[view.getId()].role);
-                }
-                removePlayerButtons();
-                generateDoneButton();
-            }
-            else if (MainActivity.players[currentPlayer].role.equals("Robber")) {
-                if (view.getId()>=currentPlayer) {
-                    showInfo("Your new role is: \n"+MainActivity.players[view.getId()+1].role);
-                }
-                else {
-                    showInfo("Your new role is: \n"+MainActivity.players[view.getId()].role);
-                }
-                if (view.getId()>=currentPlayer) {
-                    queSwitch("Robber", currentPlayer, view.getId()+1);
-                }
-                else {
-                    queSwitch("Robber", currentPlayer, view.getId());
-                }
-                removePlayerButtons();
-                generateDoneButton();
-            }
-            else if (MainActivity.players[currentPlayer].role.equals("Troublemaker")) {
-                Integer[] tempIntegerArray = new Integer[2];
-                int numSelected = 0;
-                for (int i=0;i<MainActivity.players.length-1;i++) {
-                    if (((ToggleButton) findViewById(i)).isChecked()){//i!=currentPlayer&&((ToggleButton) findViewById(i)).isChecked()) {
-                        if (i>=currentPlayer) {
-                            tempIntegerArray[numSelected]=i+1;
-                        }
-                        else {
-                            tempIntegerArray[numSelected]=i;
-                        }
-                        numSelected++;
+            switch (MainActivity.players[currentPlayer].originalRole) {
+                case "Seer":
+                    if (view.getId() >= currentPlayer) {
+                        showInfo(MainActivity.players[(view.getId()) + 1].name + "'s role is: \n" + MainActivity.players[(view.getId()) + 1].originalRole);
+                    } else {
+                        showInfo(MainActivity.players[view.getId()].name + "'s role is: \n" + MainActivity.players[view.getId()].originalRole);
                     }
-                }
-                if (numSelected==2){
-                    queSwitch("Troublemaker",tempIntegerArray[0],tempIntegerArray[1]);
                     removePlayerButtons();
                     generateDoneButton();
-                }
+                    break;
+                case "Robber":
+                    if (view.getId() >= currentPlayer) {
+                        showInfo("Your new role is: \n" + MainActivity.players[(view.getId()) + 1].originalRole);
+                    } else {
+                        showInfo("Your new role is: \n" + MainActivity.players[view.getId()].originalRole);
+                    }
+                    if (view.getId() >= currentPlayer) {
+                        queSwitch("Robber", currentPlayer, (view.getId()) + 1);
+                    } else {
+                        queSwitch("Robber", currentPlayer, view.getId());
+                    }
+                    removePlayerButtons();
+                    generateDoneButton();
+                    break;
+                case "Troublemaker":
+                    Integer[] tempIntegerArray = new Integer[2];
+                    int numSelected = 0;
+                    for (int i = 0; i < MainActivity.players.length - 1; i++) {
+                        if (((ToggleButton) findViewById(i)).isChecked()) {
+                            if (i >= currentPlayer) {
+                                tempIntegerArray[numSelected] = i + 1;
+                            } else {
+                                tempIntegerArray[numSelected] = i;
+                            }
+                            numSelected++;
+                        }
+                    }
+                    if (numSelected == 2) {
+                        queSwitch("Troublemaker", tempIntegerArray[0], tempIntegerArray[1]);
+                        removePlayerButtons();
+                        generateDoneButton();
+                    }
+                    break;
             }
         }
     }
-    void nextPlayer(View v) {
-        try {
-            setContentView(R.layout.round_1);
-            playerNameTextView = (TextView) findViewById(R.id.playerName);
-            roleTextView = (TextView) findViewById(R.id.role);
-            explanationTextView = (TextView) findViewById(R.id.explanation);
-            generateView(MainActivity.players[currentPlayer].role, currentPlayer);
-            if (MainActivity.smallScreen) {
-                scaleForSmallScreen();
-            }
+    public void nextPlayer(View v) {
+        setContentView(R.layout.round_1);
+        playerNameTextView = findViewById(R.id.playerName);
+        roleTextView = findViewById(R.id.role);
+        explanationTextView = findViewById(R.id.explanation);
+        generateView();
+        if (MainActivity.smallScreen) {
+            scaleForSmallScreen();
         }
-        catch (Exception e) {}
-
     }
 
     void queSwitch(String role, int switcher, int switchWith) {
-        Integer[] tempIntegerArray = new Integer[]{switcher, switchWith};
+        int[] tempIntArray = new int[]{switcher, switchWith};
         if (role.equals("Robber")){
-            robberQue.add(tempIntegerArray);
+            robberQue.add(tempIntArray);
         }
         else if (role.equals("Troublemaker")){
-            troublemakerQue.add(tempIntegerArray);
+            troublemakerQue.add(tempIntArray);
         }
     }
     void doSwitch() {
-        for (Integer[] robberAction : robberQue) {
-            String tempRole = MainActivity.players[robberAction[0]].role;
-            MainActivity.players[robberAction[0]].role = MainActivity.players[robberAction[1]].role;
-            MainActivity.players[robberAction[1]].role = tempRole;
+        for (int[] robberAction : robberQue) {
+            MainActivity.players[robberAction[0]].setPostRobber(MainActivity.players[robberAction[1]].postDoppel);
+            MainActivity.players[robberAction[1]].setPostRobber(MainActivity.players[robberAction[0]].postDoppel);
         }
-        for (Integer[] troublemakerAction : troublemakerQue) {
-            String tempRole = MainActivity.players[troublemakerAction[0]].role;
-            MainActivity.players[troublemakerAction[0]].role = MainActivity.players[troublemakerAction[1]].role;
-            MainActivity.players[troublemakerAction[1]].role = tempRole;
+        for (int[] troublemakerAction : troublemakerQue) {
+            MainActivity.players[troublemakerAction[0]].setPostTrouble(MainActivity.players[troublemakerAction[1]].postRobber);
+            MainActivity.players[troublemakerAction[1]].setPostTrouble(MainActivity.players[troublemakerAction[0]].postRobber);
         }
-        for(int i = 0; i < drunkQue.size(); i++)
-        {
-            String newRole = CharacterSelect.unusedRoles[drunkQue.get(i)[0]];
-            CharacterSelect.unusedRoles[drunkQue.get(i)[0]] = MainActivity.players[drunkQue.get(i)[1]].role;
-            MainActivity.players[drunkQue.get(i)[1]].role = newRole;
+        for (int[] drunkAction : drunkQue) {
+            CharacterSelect.unusedRoles[drunkAction[0]] = MainActivity.players[drunkAction[1]].postTrouble;
+            MainActivity.players[drunkAction[1]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[0]]);
         }
     }
 
@@ -262,7 +270,7 @@ public class Round1of1 extends AppCompatActivity {
         Button doneB = new Button(this);
         doneB.setLayoutParams(new RelativeLayout.LayoutParams(2330, ViewGroup.LayoutParams.WRAP_CONTENT));
         doneB.setText("Done");
-        doneB.setId(1+0); //doneButtonID = 1
+        doneB.setId(1); //doneButtonID = 1
         doneB.setOnClickListener(new doneClick());
 
         ((RelativeLayout) view).addView(doneB);
@@ -272,27 +280,30 @@ public class Round1of1 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(15,0,15,15);
     }
-    void remove() {
-        removeInfo();
-        removePlayerButtons();
-    }
+//    void remove() { // I'm pretty sure this isn't needed but may as well keep it until testing
+//        removeInfo();
+//        removePlayerButtons();
+//    }
 
-    void generateView(String role, int playerNum)
+    /**
+     * Makes the text and options for the role
+     */
+    void generateView()
     {
-        playerNameTextView.setText(MainActivity.players[playerNum].name);
-        roleTextView.setText(MainActivity.players[playerNum].role);
-        switch (role) {
+        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
+        roleTextView.setText(MainActivity.players[currentPlayer].originalRole);
+        switch (MainActivity.players[currentPlayer].originalRole) {
             case "Werewolf":
-                generateWerewolf(playerNum);
+                generateWerewolf();
                 break;
             case "Seer":
                 generateSeer();
                 break;
             case "Robber":
-                generateRobber(playerNum);
+                generateRobber();
                 break;
             case "Troublemaker":
-                generateTroublemaker(playerNum);
+                generateTroublemaker();
                 break;
             case "Minion":
                 generateMinion();
@@ -314,14 +325,18 @@ public class Round1of1 extends AppCompatActivity {
                 break;
         }
     }
-    void showWerewolves(int playerNum) {
-        String otherWerewolves = "";
-        for (int i=0;i<MainActivity.players.length; i++){
-            if (MainActivity.players[i].role.equals("Werewolf")&&i!=playerNum) {
-                otherWerewolves += "\n" + MainActivity.players[i].name;
+
+    /**
+     * Shows the werewolves, either for a minion or werewolf
+     */
+    void showWerewolves() {
+        StringBuilder otherWerewolves = new StringBuilder();
+        for (Player player : MainActivity.players){
+            if (player.originalRole.equals("Werewolf")&&player!=MainActivity.players[currentPlayer]) {
+                otherWerewolves.append("\n").append(player.name);
             }
         }
-        if (playerNum==100) { // for the minion
+        if (MainActivity.players[currentPlayer].originalRole.equals("Minion")) {
             showInfo("The werewolves are:"+otherWerewolves);
         }
         else {
@@ -333,38 +348,42 @@ public class Round1of1 extends AppCompatActivity {
             generateDoneButton();
         }
     }
-    void generateWerewolf(int playerNum) // done
+
+    /**
+     * Generates the view for a werewolf
+     */
+    void generateWerewolf() // done
     {
         explanationTextView.setText("You see the other werewolves. If you're alone, see an unused role.");
         if(countRoles("Werewolf")>1)//not lone wolf
         {
-            showWerewolves(playerNum);
+            showWerewolves();
         }
         else//lone wolf
         {
-            showUnusedRoleButtons(false, false);
+            showUnusedRoleButtons(false);
         }
     }
     void generateSeer() {
         explanationTextView.setText("You see another player's role or two unused roles.");
         showSeerOptions();
     }
-    void generateRobber(int playerNum) {
+    void generateRobber() {
         explanationTextView.setText("Take and view someone else's role and give them your own.");
-        showPlayerButtons(playerNum);
+        showPlayerButtons();
     }
-    void generateTroublemaker(int playerNum) {
+    void generateTroublemaker() {
         explanationTextView.setText("Change cards between two other players.");
-        showPlayerButtons(playerNum, true);
+        showPlayerButtons(true);
     }
     void generateMinion() {
         explanationTextView.setText("You see who the werewolves are. If there are no werewolves, you become one.");
         if(countRoles("Werewolf")>0) {
-            showWerewolves(100);
+            showWerewolves();
         }
         else
         {
-            showInfo("There are no other werewolves. You are now one, unless one shows up later.");
+            showInfo("There are no werewolves. You are now one, unless one shows up later.");
         }
         generateDoneButton();
     }
@@ -382,20 +401,20 @@ public class Round1of1 extends AppCompatActivity {
     }
     void generateDrunk() {
         explanationTextView.setText("Choose a card from the center.");
-        showUnusedRoleButtons(false, true);
+        showUnusedRoleButtons(false);
         generateDoneButton();
     }
     void generateMason() {
         explanationTextView.setText("You see the other mason, if there is one.");
-        String otherMasons = "";
+        StringBuilder otherMasons = new StringBuilder();
         for(int i = 0 ; i < MainActivity.players.length; i++)
         {
-            if(MainActivity.players[i].role.equals("Mason") && i!=currentPlayer)
+            if(MainActivity.players[i].originalRole.equals("Mason") && i!=currentPlayer)
             {
-                otherMasons += MainActivity.players[i].name+"\n";
+                otherMasons.append(MainActivity.players[i].name).append("\n");
             }
         }
-        if(!otherMasons.equals(""))
+        if(!otherMasons.toString().equals(""))
         {
             if(countRoles("Mason") > 2) {
                 showInfo("The other masons are " + otherMasons);
@@ -410,17 +429,11 @@ public class Round1of1 extends AppCompatActivity {
         }
         generateDoneButton();
     }
-    void generalRemove(int to) {
-        View view = findViewById(R.id.round_1);
-        for (int i=0;i<to;i++) {
-            ((RelativeLayout) view).removeView(findViewById(i));
-        }
-    }
     void showInfo(String info) {
         View view = findViewById(R.id.round_1);
         TextView tempAddTextView = new TextView(this);
         tempAddTextView.setText(info);
-        tempAddTextView.setId(100+0);
+        tempAddTextView.setId(100);
         tempAddTextView.setTextSize(35);
         tempAddTextView.setGravity(Gravity.CENTER);
         ((RelativeLayout) view).addView(tempAddTextView);
@@ -428,10 +441,6 @@ public class Round1of1 extends AppCompatActivity {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddTextView.getLayoutParams();
         params.addRule(RelativeLayout.BELOW, R.id.explanation);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-    }
-    void removeInfo() {
-        View view = findViewById(R.id.round_1);
-        ((RelativeLayout) view).removeView(findViewById(100+0));
     }
     void showSeerOptions() {
         View view = findViewById(R.id.round_1);
@@ -456,7 +465,7 @@ public class Round1of1 extends AppCompatActivity {
         Button tempAddButton2 = new Button(this);
         tempAddButton2.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
         tempAddButton2.setText("Unused Roles");
-        tempAddButton2.setId(1+0);
+        tempAddButton2.setId(1);
         tempAddButton2.setOnClickListener(new seerClick("unused"));
         ((RelativeLayout) view).addView(tempAddButton2);
         RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) tempAddButton2.getLayoutParams();
@@ -467,9 +476,9 @@ public class Round1of1 extends AppCompatActivity {
     void removeSeerOptions() {
         View view = findViewById(R.id.round_1);
         ((RelativeLayout) view).removeView(findViewById(0));
-        ((RelativeLayout) view).removeView(findViewById(1+0));
+        ((RelativeLayout) view).removeView(findViewById(1));
     }
-    void showUnusedRoleButtons(boolean toggleButtons, boolean drunk) {
+    void showUnusedRoleButtons(boolean toggleButtons) {
         View view = findViewById(R.id.round_1);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -485,7 +494,7 @@ public class Round1of1 extends AppCompatActivity {
                 ((ToggleButton) tempAddButton).setTextOn("Role "+(i+1));
                 ((ToggleButton) tempAddButton).setTextOff("Role "+(i+1));
             }
-            tempAddButton.setOnClickListener(new unusedRoleClick(toggleButtons, drunk));
+            tempAddButton.setOnClickListener(new unusedRoleClick(MainActivity.players[currentPlayer].originalRole));
             tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
             tempAddButton.setText("Role "+(i+1));
             tempAddButton.setId(i);
@@ -499,11 +508,15 @@ public class Round1of1 extends AppCompatActivity {
     void removeUnusedRoleButtons() {
         View view = findViewById(R.id.round_1);
         ((RelativeLayout) view).removeView(findViewById(0));
-        ((RelativeLayout) view).removeView(findViewById(1+0));
-        ((RelativeLayout) view).removeView(findViewById(2+0));
+        ((RelativeLayout) view).removeView(findViewById(1));
+        ((RelativeLayout) view).removeView(findViewById(2));
     }
-    void showPlayerButtons(int excludedPlayerIndex) {showPlayerButtons(excludedPlayerIndex,false);} // Optional Parameter
-    void showPlayerButtons(int excludedPlayerIndex, boolean toggleButtons)
+
+    /**
+     * Show buttons for all players except yourself
+     */
+    void showPlayerButtons() {showPlayerButtons(false);} // Optional Parameter
+    void showPlayerButtons(boolean toggleButtons)
     {
         View view = findViewById(R.id.round_1);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -513,19 +526,19 @@ public class Round1of1 extends AppCompatActivity {
         int height = displayMetrics.heightPixels;
         int buttonHeight = height/10;
         int j=0; //j is used instead of i to fix the times when we skip the player whose turn it is
-        for(int i = 0; i < MainActivity.players.length; i++)
+        for(Player player : MainActivity.players)
         {
-            if (i!=excludedPlayerIndex) {
+            if (MainActivity.players[currentPlayer]!=player) {
                 Button tempAddButton = new Button(this);
                 if (toggleButtons) {
                     tempAddButton = new ToggleButton(this);
-                    ((ToggleButton) tempAddButton).setTextOn(MainActivity.players[i].name + "");
-                    ((ToggleButton) tempAddButton).setTextOff(MainActivity.players[i].name + "");
+                    ((ToggleButton) tempAddButton).setTextOn(player.name + "");
+                    ((ToggleButton) tempAddButton).setTextOff(player.name + "");
                 }
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
-                tempAddButton.setText(MainActivity.players[i].name + "");
+                tempAddButton.setText(player.name);
                 tempAddButton.setId(j);
-                tempAddButton.setOnClickListener(new playerSelection(toggleButtons));
+                tempAddButton.setOnClickListener(new playerSelection());
                 ((RelativeLayout) view).addView(tempAddButton);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
 
@@ -560,4 +573,9 @@ public class Round1of1 extends AppCompatActivity {
             ((RelativeLayout) view).removeView(findViewById(i));
         }
     }
+
+
+    // Stops the back button
+    @Override
+    public void onBackPressed() {}
 }

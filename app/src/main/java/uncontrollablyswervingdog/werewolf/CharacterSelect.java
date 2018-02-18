@@ -3,27 +3,28 @@ package uncontrollablyswervingdog.werewolf;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.util.DisplayMetrics;
+
 import java.util.HashMap;
 import java.util.Random;
 
 
 public class CharacterSelect extends AppCompatActivity
 {
-    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};
-//    static String[] roles = new String[]{"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
+//    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};
+    static String[] roles = new String[]{"#Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
     int[] amounts;
     static int numRounds;
     static String[] unusedRoles;
     ScrollView scrollView;
     RelativeLayout scrollLayout;
+    static HashMap<String, Integer> usedRoles = new HashMap<>(); // For the background in the discussion timer
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -48,7 +49,7 @@ public class CharacterSelect extends AppCompatActivity
             amounts[i] = 0;
             TextView label = new TextView(this);
             label.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-            label.setText(roles[i]);
+            label.setText(Round1of2.removeDoppelChar(roles[i]));
             label.setId(i+400);
             if (MainActivity.smallScreen && roles[i].length() > 9) {
                 label.setTextSize(34);
@@ -150,7 +151,7 @@ public class CharacterSelect extends AppCompatActivity
             int totalRoles = 0;
             for(int i = 0; i < MainActivity.players.length; i++)
             {
-                MainActivity.players[i].role = null;
+                MainActivity.players[i].originalRole = null;
             }
             for(int i = 0; i < roles.length; i++)
             {
@@ -161,17 +162,17 @@ public class CharacterSelect extends AppCompatActivity
                 }
             }
             numRounds = checkNumRounds(availableRoles);
+            usedRoles.putAll(availableRoles); // For the background in the discussion timer
             while(assignedNumber!=numPlayers)
             {
                 int chosenPlayer = Rand.nextInt(numPlayers);
-                if(MainActivity.players[chosenPlayer].role==null)
+                if(MainActivity.players[chosenPlayer].originalRole==null)
                 {
                     Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
                     Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
                     String role = (String) keys[roleSelected];
-                    MainActivity.players[chosenPlayer].role = role;
-                    MainActivity.players[chosenPlayer].originalRole = role;
+                    MainActivity.players[chosenPlayer].initialize(role);
                     int number = (int) nums[roleSelected]-1;
                     totalRoles--;
                     if(number==0)
@@ -196,7 +197,6 @@ public class CharacterSelect extends AppCompatActivity
                     Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
                     Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
-                    Log.d("Number#################", roleSelected+":"+keys[roleSelected]);
                     String role = (String) keys[roleSelected];
                     unusedRoles[chosenPlayer] = role;
                     int number = (int) nums[roleSelected] - 1;
@@ -213,7 +213,7 @@ public class CharacterSelect extends AppCompatActivity
                 startActivity(intent);
             }
             else {
-                Intent intent = new Intent(CharacterSelect.this, Round1.class);
+                Intent intent = new Intent(CharacterSelect.this, Round1of2.class);
                 startActivity(intent);
             }
         }
@@ -265,8 +265,7 @@ public class CharacterSelect extends AppCompatActivity
     {
         for (Object role : availableRoles.keySet().toArray())
         {
-            Log.d("asdfasdfasdf###########", (String)role);
-            if(role.equals("Insomniac") || role.equals("Doppelganger"))
+            if(role.equals("Insomniac") || role.equals("#Doppelganger"))
             {
                 return 2;
             }
