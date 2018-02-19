@@ -1,5 +1,6 @@
 package uncontrollablyswervingdog.werewolf;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Random;
 
-
+@SuppressLint({"ResourceType","SetTextI18n"})
 public class CharacterSelect extends AppCompatActivity
 {
 //    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};
@@ -31,19 +32,17 @@ public class CharacterSelect extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_select);
 
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
+        scrollView = findViewById(R.id.scroll_view);
+        scrollLayout = findViewById(R.id.scroll_layout);
 
         generateStuff();
     }
     void generateStuff()
     {
-        View relLayout = findViewById(R.id.charSelect);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         amounts = new int[roles.length];
-        int buttonHeight = 0;
         for(int i = 0; i < roles.length; i++)
         {
             amounts[i] = 0;
@@ -112,7 +111,7 @@ public class CharacterSelect extends AppCompatActivity
         Button doneButton = new Button(this);
         doneButton.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         doneButton.setText("Done");
-        doneButton.setId(0+500);
+        doneButton.setId(500);
         doneButton.setVisibility(View.INVISIBLE);
         doneButton.setOnClickListener(new doneClick());
         scrollLayout.addView(doneButton);//((RelativeLayout) relLayout).addView(doneButton);
@@ -138,7 +137,7 @@ public class CharacterSelect extends AppCompatActivity
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
     }
     Random Rand;
-    HashMap<String, Integer> availableRoles = new HashMap<String, Integer>();
+    HashMap<String, Integer> availableRoles = new HashMap<>();
     class doneClick implements View.OnClickListener
     {
         @Override
@@ -169,7 +168,7 @@ public class CharacterSelect extends AppCompatActivity
                 if(MainActivity.players[chosenPlayer].originalRole==null)
                 {
                     Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
-                    Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
+                    Object[] nums = availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
                     String role = (String) keys[roleSelected];
                     MainActivity.players[chosenPlayer].initialize(role);
@@ -195,7 +194,7 @@ public class CharacterSelect extends AppCompatActivity
                 if (unusedRoles[chosenPlayer] == null)
                 {
                     Object[] keys = availableRoles.keySet().toArray(); // returns an array of keys
-                    Object[] nums = (Object[]) availableRoles.values().toArray(); // returns an array of values
+                    Object[] nums = availableRoles.values().toArray(); // returns an array of values
                     int roleSelected = Rand.nextInt(keys.length);
                     String role = (String) keys[roleSelected];
                     unusedRoles[chosenPlayer] = role;
@@ -233,13 +232,12 @@ public class CharacterSelect extends AppCompatActivity
         public void onClick(View V)
         {
             int total = 0;
-            for(int i = 0; i < amounts.length; i++)
-            {
-                total += amounts[i];
+            for (int amount : amounts) {
+                total += amount;
             }
             if(total<MainActivity.players.length+3 || changeBy==-1)
             {
-                TextView label = (TextView) findViewById(idOfText);
+                TextView label = findViewById(idOfText);
                 amounts[index] += changeBy;
                 if (amounts[index] < 0) {
                     amounts[index] = 0;
@@ -250,13 +248,13 @@ public class CharacterSelect extends AppCompatActivity
                 ((TextView) findViewById(500+1)).setText((MainActivity.players.length+3-total)+"");
                 if(total==MainActivity.players.length+3)
                 {
-                    findViewById(0+500).setVisibility(View.VISIBLE);
-                    findViewById(1+500).setVisibility(View.INVISIBLE);
+                    findViewById(500).setVisibility(View.VISIBLE);
+                    findViewById(501).setVisibility(View.INVISIBLE);
                 }
                 else
                 {
-                    findViewById(0+500).setVisibility(View.INVISIBLE);
-                    findViewById(1+500).setVisibility(View.VISIBLE);
+                    findViewById(500).setVisibility(View.INVISIBLE);
+                    findViewById(501).setVisibility(View.VISIBLE);
                 }
             }
         }

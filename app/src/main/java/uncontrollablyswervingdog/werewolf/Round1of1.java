@@ -183,40 +183,31 @@ public class Round1of1 extends AppCompatActivity {
     class playerSelection implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            int adjust = view.getId() >= currentPlayer ?  1 : 0;
             switch (MainActivity.players[currentPlayer].originalRole) {
                 case "Seer":
-                    if (view.getId() >= currentPlayer) {
-                        showInfo(MainActivity.players[(view.getId()) + 1].name + "'s role is: \n" + MainActivity.players[(view.getId()) + 1].originalRole);
-                    } else {
-                        showInfo(MainActivity.players[view.getId()].name + "'s role is: \n" + MainActivity.players[view.getId()].originalRole);
-                    }
+                    showInfo(MainActivity.players[(view.getId()) + adjust].name + "'s role is: \n" + MainActivity.players[(view.getId()) + adjust].originalRole);
+
                     removePlayerButtons();
                     generateDoneButton();
                     break;
+
                 case "Robber":
-                    if (view.getId() >= currentPlayer) {
-                        showInfo("Your new role is: \n" + MainActivity.players[(view.getId()) + 1].originalRole);
-                    } else {
-                        showInfo("Your new role is: \n" + MainActivity.players[view.getId()].originalRole);
-                    }
-                    if (view.getId() >= currentPlayer) {
-                        queSwitch("Robber", currentPlayer, (view.getId()) + 1);
-                    } else {
-                        queSwitch("Robber", currentPlayer, view.getId());
-                    }
+                    showInfo("Your new role is: \n" + MainActivity.players[(view.getId()) + adjust].originalRole);
+
+                    queSwitch("Robber", currentPlayer, (view.getId()) + adjust);
+
                     removePlayerButtons();
                     generateDoneButton();
                     break;
+
                 case "Troublemaker":
                     Integer[] tempIntegerArray = new Integer[2];
                     int numSelected = 0;
                     for (int i = 0; i < MainActivity.players.length - 1; i++) {
                         if (((ToggleButton) findViewById(i)).isChecked()) {
-                            if (i >= currentPlayer) {
-                                tempIntegerArray[numSelected] = i + 1;
-                            } else {
-                                tempIntegerArray[numSelected] = i;
-                            }
+                            adjust = view.getId() >= currentPlayer ?  1 : 0;
+                            tempIntegerArray[numSelected] = i + adjust;
                             numSelected++;
                         }
                     }
@@ -226,6 +217,7 @@ public class Round1of1 extends AppCompatActivity {
                         generateDoneButton();
                     }
                     break;
+
             }
         }
     }
@@ -242,11 +234,16 @@ public class Round1of1 extends AppCompatActivity {
 
     void queSwitch(String role, int switcher, int switchWith) {
         int[] tempIntArray = new int[]{switcher, switchWith};
-        if (role.equals("Robber")){
-            robberQue.add(tempIntArray);
-        }
-        else if (role.equals("Troublemaker")){
-            troublemakerQue.add(tempIntArray);
+        switch (role) {
+            case "Robber":
+                robberQue.add(tempIntArray);
+                break;
+            case "Troublemaker":
+                troublemakerQue.add(tempIntArray);
+                break;
+            case "Drunk":
+                drunkQue.add(tempIntArray);
+                break;
         }
     }
     void doSwitch() {
@@ -259,8 +256,9 @@ public class Round1of1 extends AppCompatActivity {
             MainActivity.players[troublemakerAction[1]].setPostTrouble(MainActivity.players[troublemakerAction[0]].postRobber);
         }
         for (int[] drunkAction : drunkQue) {
-            CharacterSelect.unusedRoles[drunkAction[0]] = MainActivity.players[drunkAction[1]].postTrouble;
-            MainActivity.players[drunkAction[1]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[0]]);
+            // Order is important here, unlike the robber or troublemaker
+            MainActivity.players[drunkAction[0]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[1]]);
+            CharacterSelect.unusedRoles[drunkAction[1]] = MainActivity.players[drunkAction[0]].postTrouble;
         }
     }
 

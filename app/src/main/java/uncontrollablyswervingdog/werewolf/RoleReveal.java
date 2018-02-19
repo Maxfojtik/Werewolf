@@ -49,10 +49,10 @@ public class RoleReveal extends AppCompatActivity {
         names.setId(0);
         names.setTextSize(30);
         names.setGravity(Gravity.LEFT);
-//        names.setLineSpacing(40f, 1f);
+        names.setLineSpacing(40f, 1f);
         StringBuilder playerNames = new StringBuilder();
         for (int i=0; i<MainActivity.players.length;i++) {
-            playerNames.append(MainActivity.players[i].name).append("\n\n");
+            playerNames.append(MainActivity.players[i].name).append("\n");
         }
         names.setText(playerNames.toString());
         ((RelativeLayout) findViewById(R.id.roles_scroll)).addView(names);
@@ -64,10 +64,10 @@ public class RoleReveal extends AppCompatActivity {
         roles.setId(1);
         roles.setTextSize(30);
         roles.setGravity(Gravity.RIGHT);
-//        roles.setLineSpacing(40f, 1f);
-        StringBuilder roleNames = new StringBuilder("\n");
+        roles.setLineSpacing(40f, 1f);
+        StringBuilder roleNames = new StringBuilder("");
         for (int i=0; i<MainActivity.players.length;i++) {
-            roleNames.append(replaceDoppelChar(MainActivity.players[i].finalRole)).append("\n\n");
+            roleNames.append(replaceDoppelChar(MainActivity.players[i].finalRole)).append("\n");
         }
         roles.setText(roleNames.toString());
         ((RelativeLayout) findViewById(R.id.roles_scroll)).addView(roles);

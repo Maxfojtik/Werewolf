@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -264,8 +263,9 @@ public class Round1of2 extends AppCompatActivity {
             MainActivity.players[troublemakerAction[1]].setPostTrouble(MainActivity.players[troublemakerAction[0]].postRobber);
         }
         for (int[] drunkAction : drunkQue) {
-            CharacterSelect.unusedRoles[drunkAction[0]] = MainActivity.players[drunkAction[1]].postTrouble;
-            MainActivity.players[drunkAction[1]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[0]]);
+            // Order is important here, unlike the robber or troublemaker
+            MainActivity.players[drunkAction[0]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[1]]);
+            CharacterSelect.unusedRoles[drunkAction[1]] = MainActivity.players[drunkAction[0]].postTrouble;
         }
     }
 
@@ -441,9 +441,4 @@ public class Round1of2 extends AppCompatActivity {
     @Override
     public void onBackPressed() {}
 
-    String logReturn(String print)
-    {
-        Log.e("LOG",print);
-        return print;
-    }
 }
