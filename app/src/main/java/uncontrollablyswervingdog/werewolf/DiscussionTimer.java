@@ -38,7 +38,7 @@ public class DiscussionTimer extends AppCompatActivity {
         TextView roles = new TextView(this);
         roles.setId(1);
         roles.setTextSize(18);
-        roles.setGravity(Gravity.LEFT);
+        roles.setGravity(Gravity.START);
         roles.setLineSpacing(40f, 1f);
         roles.setTextColor(Color.rgb(150,150,150));
         StringBuilder roleNames = new StringBuilder("Roles:\n");

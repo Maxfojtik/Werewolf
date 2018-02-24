@@ -56,7 +56,7 @@ public class Round1of1 extends AppCompatActivity {
         explanationTextView = findViewById(R.id.explanation);
 
         generateView();
-        setContentView(R.layout.round_1_reveal);
+        setContentView(R.layout.between_players);
         if (MainActivity.players[currentPlayer].name.equals("")) {
             MainActivity.players[currentPlayer].name = "Player 1";
         }
@@ -89,7 +89,7 @@ public class Round1of1 extends AppCompatActivity {
 //                remove(); // I'm not sure why this was here. Maybe it's important?
                 currentPlayer++;
                 generateView();
-                setContentView(R.layout.round_1_reveal);
+                setContentView(R.layout.between_players);
                 TextView playerName = findViewById(R.id.playerName);
                 playerName.setText(MainActivity.players[currentPlayer].name);
             }

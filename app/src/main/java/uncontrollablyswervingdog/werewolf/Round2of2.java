@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -14,18 +15,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import static uncontrollablyswervingdog.werewolf.MainActivity.players;
+import static uncontrollablyswervingdog.werewolf.Round1of2.postDoppelUnusedRoles;
+import static uncontrollablyswervingdog.werewolf.Round1of2.removeDoppelChar;
+
 @SuppressLint({"ResourceType","SetTextI18n"})
 public class Round2of2 extends AppCompatActivity {
 
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
+    TextView betweenPlayersName;
     int currentPlayer = 0;
+
+    static final int INFO_ID = 100;
 
     int countRoles(String role) {
         int total = 0;
-        for (int i = 0; i < MainActivity.players.length; i++) {
-            if (Round1of2.removeDoppelChar(MainActivity.players[i].preDoppel).equals(role)) {
+        for (Player player : players) {
+            if (removeDoppelChar(player.preDoppel).equals(role)) {
                 total++;
             }
         }
@@ -42,8 +50,9 @@ public class Round2of2 extends AppCompatActivity {
         explanationTextView = findViewById(R.id.explanation);
 
         generateView();
-        setContentView(R.layout.round_1_reveal);
-        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
+        setContentView(R.layout.between_players);
+        betweenPlayersName = findViewById(R.id.between_players_name);
+        betweenPlayersName.setText(players[currentPlayer].name);
 
         if (MainActivity.smallScreen) {
             scaleForSmallScreen();
@@ -65,13 +74,13 @@ public class Round2of2 extends AppCompatActivity {
     class doneClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            if (currentPlayer+1!=MainActivity.players.length) {
+            if (currentPlayer+1!= players.length) {
                 remove();
                 currentPlayer++;
                 generateView();
-                setContentView(R.layout.round_1_reveal);
-                TextView playerName = findViewById(R.id.playerName);
-                playerName.setText(MainActivity.players[currentPlayer].name);
+                setContentView(R.layout.between_players);
+                betweenPlayersName = findViewById(R.id.between_players_name);
+                betweenPlayersName.setText(players[currentPlayer].name);
             }
             else {
                 Intent intent = new Intent(Round2of2.this, DiscussionTimer.class);
@@ -79,23 +88,28 @@ public class Round2of2 extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Is called when the seer decides whether to check a player role or an unused role
+     */
     class seerClick implements View.OnClickListener {
         String selection;
         seerClick(String selection)
         {
-            this.selection = selection;
+            this.selection = selection; // The option the seer selected
         }
         @Override
         public void onClick(View view) {
             removeSeerOptions();
             if (selection.equals("player")) {
-                showPlayerButtons(currentPlayer);
+                showPlayerButtons();
             }
             else {
                 showUnusedRoleButtons();
             }
         }
     }
+
     /**
      * Listener for when you click on an unused role button for any reason
      */
@@ -123,7 +137,7 @@ public class Round2of2 extends AppCompatActivity {
                         StringBuilder rolesSeen = new StringBuilder();
                         for (int i = 0; i < 3; i++) {
                             if (((ToggleButton) findViewById(i)).isChecked() && i != notChecked) {
-                                rolesSeen.append("\n").append(Round1of2.removeDoppelChar(Round1of2.postDoppelUnusedRoles[i]));
+                                rolesSeen.append("\n").append(removeDoppelChar(postDoppelUnusedRoles[i]));
                             }
                         }
                         removeUnusedRoleButtons();
@@ -133,10 +147,9 @@ public class Round2of2 extends AppCompatActivity {
                     break;
 
                 case "Werewolf":
-                    String rolesSeen = "";
-                    rolesSeen += "\n" + Round1of2.removeDoppelChar(Round1of2.postDoppelUnusedRoles[view.getId()]);
+                    String roleSeen = removeDoppelChar(postDoppelUnusedRoles[view.getId()]);
                     removeUnusedRoleButtons();
-                    showInfo("You saw: " + rolesSeen);
+                    showInfo("You saw: \n" + roleSeen);
                     generateDoneButton();
                     break;
             }
@@ -149,13 +162,16 @@ public class Round2of2 extends AppCompatActivity {
     class playerSelection implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            if (Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Seer")) {
-                int adjust = view.getId() >= currentPlayer ?  1 : 0;
+            if (removeDoppelChar(players[currentPlayer].originalRole).equals("Seer")) {
 
-                showInfo(MainActivity.players[view.getId()+adjust].name+"'s role is: \n"+ Round1of2.useDoppelChar(MainActivity.players[view.getId()+adjust].postDoppel));
+                int adjust = view.getId() >= currentPlayer ?  1 : 0;
+                showInfo(players[view.getId()+adjust].name+"'s role is: \n"+ Round1of2.useDoppelChar(players[view.getId()+adjust].postDoppel));
 
                 removePlayerButtons();
                 generateDoneButton();
+            }
+            else {
+                Log.e("MAJOR PROBLEM LN167:","Not seer for playerSelection");
             }
         }
     }
@@ -176,6 +192,7 @@ public class Round2of2 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(15,0,15,15);
     }
+
     void remove() {
         removeInfo();
         removePlayerButtons();
@@ -183,9 +200,9 @@ public class Round2of2 extends AppCompatActivity {
 
     void generateView()
     {
-        String role = Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].preDoppel);
-        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
-        roleTextView.setText(RoleReveal.replaceDoppelChar(MainActivity.players[currentPlayer].preDoppel));
+        String role = removeDoppelChar(players[currentPlayer].preDoppel);
+        playerNameTextView.setText(players[currentPlayer].name);
+        roleTextView.setText(RoleReveal.replaceDoppelChar(players[currentPlayer].preDoppel));
         switch (role) {
             case "Werewolf":
                 generateWerewolf();
@@ -221,12 +238,12 @@ public class Round2of2 extends AppCompatActivity {
     }
     void showWerewolves() {
         StringBuilder otherWerewolves = new StringBuilder();
-        for (Player player : MainActivity.players){
-            if (Round1of2.removeDoppelChar(player.preDoppel).equals("Werewolf")&&player!=MainActivity.players[currentPlayer]) {
+        for (Player player : players){
+            if (removeDoppelChar(player.preDoppel).equals("Werewolf")&&player!= players[currentPlayer]) {
                 otherWerewolves.append("\n").append(player.name);
             }
         }
-        if (Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].postDoppel).equals("Minion")) { // for the minion
+        if (removeDoppelChar(players[currentPlayer].postDoppel).equals("Minion")) { // for the minion
             if (countRoles("Werewolf") >= 2) {
                 showInfo("The werewolves are:" + otherWerewolves);
             } else {
@@ -260,11 +277,11 @@ public class Round2of2 extends AppCompatActivity {
     }
     void generateRound2Robber() {
         explanationTextView.setText("You take and view someone else's role and give them your own.");
-        if (Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Doppelganger")) {
-            showInfo("You stole "+ Round1of2.useDoppelChar(MainActivity.players[currentPlayer].postDoppel));
+        if (removeDoppelChar(players[currentPlayer].originalRole).equals("Doppelganger")) {
+            showInfo("You stole "+ Round1of2.useDoppelChar(players[currentPlayer].postDoppel));
         }
         else {
-            showInfo("You stole " + Round1of2.useDoppelChar(MainActivity.players[currentPlayer].postRobber));
+            showInfo("You stole " + Round1of2.useDoppelChar(players[currentPlayer].postRobber));
         }
         generateDoneButton();
     }
@@ -292,7 +309,7 @@ public class Round2of2 extends AppCompatActivity {
         generateDoneButton();
     }
     void generateInsomniac() {
-        explanationTextView.setText("Your role at the end of the night is "+ MainActivity.players[currentPlayer].finalRole);
+        explanationTextView.setText("Your role at the end of the night is "+ players[currentPlayer].finalRole);
         generateDoneButton();
     }
     void generateAlreadyDone() {
@@ -302,9 +319,9 @@ public class Round2of2 extends AppCompatActivity {
     void generateMason() {
         explanationTextView.setText("You see the other mason, if there is one.");
         StringBuilder otherMasons = new StringBuilder();
-        for(Player player : MainActivity.players)
+        for(Player player : players)
         {
-            if(Round1of2.removeDoppelChar(player.preDoppel).equals("Mason") && player!=MainActivity.players[currentPlayer])
+            if(removeDoppelChar(player.preDoppel).equals("Mason") && player!= players[currentPlayer])
             {
                 otherMasons.append(player.name).append("\n");
             }
@@ -328,7 +345,7 @@ public class Round2of2 extends AppCompatActivity {
         View view = findViewById(R.id.round_1);
         TextView tempAddTextView = new TextView(this);
         tempAddTextView.setText(info);
-        tempAddTextView.setId(100);
+        tempAddTextView.setId(INFO_ID);
         tempAddTextView.setTextSize(35);
         tempAddTextView.setGravity(Gravity.CENTER);
         ((RelativeLayout) view).addView(tempAddTextView);
@@ -339,7 +356,7 @@ public class Round2of2 extends AppCompatActivity {
     }
     void removeInfo() {
         View view = findViewById(R.id.round_1);
-        ((RelativeLayout) view).removeView(findViewById(100));
+        ((RelativeLayout) view).removeView(findViewById(INFO_ID));
     }
 
     void showSeerOptions() {
@@ -390,12 +407,12 @@ public class Round2of2 extends AppCompatActivity {
 
         for (int i=0;i<3;i++){
             Button tempAddButton = new Button(this);
-            if (Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Seer")) {
+            if (removeDoppelChar(players[currentPlayer].preDoppel).equals("Seer")) {
                 tempAddButton = new ToggleButton(this);
                 ((ToggleButton) tempAddButton).setTextOn("Role "+(i+1));
                 ((ToggleButton) tempAddButton).setTextOff("Role "+(i+1));
             }
-            tempAddButton.setOnClickListener(new unusedRoleClick(Round1of2.removeDoppelChar(MainActivity.players[currentPlayer].postDoppel)));
+            tempAddButton.setOnClickListener(new unusedRoleClick(removeDoppelChar(players[currentPlayer].preDoppel)));
             tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
             tempAddButton.setText("Role "+(i+1));
             tempAddButton.setId(i);
@@ -412,7 +429,11 @@ public class Round2of2 extends AppCompatActivity {
         ((RelativeLayout) view).removeView(findViewById(1));
         ((RelativeLayout) view).removeView(findViewById(2));
     }
-    void showPlayerButtons(int excludedPlayerIndex)
+
+    /**
+     * Shows the player buttons for the seer. Seer is the only role which sees player buttons in round 2
+     */
+    void showPlayerButtons()
     {
         View view = findViewById(R.id.round_1);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -422,12 +443,12 @@ public class Round2of2 extends AppCompatActivity {
         int height = displayMetrics.heightPixels;
         int buttonHeight = height/10;
         int j=0; //j is used instead of i to fix the times when we skip the player whose turn it is
-        for(int i = 0; i < MainActivity.players.length; i++)
+        for(Player player : players)
         {
-            if (i!=excludedPlayerIndex) {
+            if (player!= players[currentPlayer]) {
                 Button tempAddButton = new Button(this);
                 tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
-                tempAddButton.setText(MainActivity.players[i].name);
+                tempAddButton.setText(player.name);
                 tempAddButton.setId(j);
                 tempAddButton.setOnClickListener(new playerSelection());
                 ((RelativeLayout) view).addView(tempAddButton);
@@ -455,12 +476,12 @@ public class Round2of2 extends AppCompatActivity {
                 }
                 j++;
             }
-
         }
     }
+
     void removePlayerButtons() {
         View view = findViewById(R.id.round_1);
-        for(int i = 0; i < MainActivity.players.length; i++) {
+        for(int i = 0; i < players.length; i++) {
             ((RelativeLayout) view).removeView(findViewById(i));
         }
     }

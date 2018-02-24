@@ -4,10 +4,10 @@
     android:layout_height="match_parent" android:id="@+id/round_1_reveal">
 
     <TextView
-        android:id="@+id/playerName"
+        android:id="@+id/between_players_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Player 1"
+        android:text="[name]"
         android:gravity="center"
         android:textSize="40sp"
         android:layout_alignParentTop="true"

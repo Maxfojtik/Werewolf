@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        newButton = (Button) findViewById(R.id.new_button);
-        doneButton = (Button) findViewById(R.id.done_button);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        scrollLayout = (RelativeLayout) findViewById(R.id.scroll_layout);
+        newButton = findViewById(R.id.new_button);
+        doneButton = findViewById(R.id.done_button);
+        scrollView = findViewById(R.id.scroll_view);
+        scrollLayout = findViewById(R.id.scroll_layout);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
             }
             // For the next editTexts, set the alignment so they are under the previous one
             for (int i=v.getId()-(diff-1);i<numEditTexts+2;i++) {
-                EditText editText2 = (EditText) findViewById(i);
-                Button delButton2 = (Button) findViewById(i+diff);
+                EditText editText2 = findViewById(i);
+                Button delButton2 = findViewById(i+diff);
                 editText2.setHint("Player "+(i-1));
                 editText2.setId(i-1);
                 delButton2.setId(i+diff-1);
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 //            players[0] = new Player(shortenName(var1.getText()+""));
 //        }
         for (int i=0;i<players.length;i++) {
-            EditText var = (EditText) findViewById(i+1);
+            EditText var = findViewById(i+1);
             if ((var.getText()+"").equals("")) {
                 players[i] = new Player(var.getHint()+"");
             }

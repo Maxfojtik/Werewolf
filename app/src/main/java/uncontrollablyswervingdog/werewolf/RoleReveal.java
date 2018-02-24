@@ -48,7 +48,7 @@ public class RoleReveal extends AppCompatActivity {
         names = new TextView(this);
         names.setId(0);
         names.setTextSize(30);
-        names.setGravity(Gravity.LEFT);
+        names.setGravity(Gravity.START);
         names.setLineSpacing(40f, 1f);
         StringBuilder playerNames = new StringBuilder();
         for (int i=0; i<MainActivity.players.length;i++) {
@@ -63,7 +63,7 @@ public class RoleReveal extends AppCompatActivity {
         roles = new TextView(this);
         roles.setId(1);
         roles.setTextSize(30);
-        roles.setGravity(Gravity.RIGHT);
+        roles.setGravity(Gravity.END);
         roles.setLineSpacing(40f, 1f);
         StringBuilder roleNames = new StringBuilder("");
         for (int i=0; i<MainActivity.players.length;i++) {

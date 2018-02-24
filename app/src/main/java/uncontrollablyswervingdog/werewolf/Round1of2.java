@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -16,17 +17,23 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
+import static uncontrollablyswervingdog.werewolf.CharacterSelect.unusedRoles;
+import static uncontrollablyswervingdog.werewolf.MainActivity.players;
+import static uncontrollablyswervingdog.werewolf.RoleReveal.replaceDoppelChar;
+import static uncontrollablyswervingdog.werewolf.Round2of2.INFO_ID;
+
 @SuppressLint({"ResourceType","SetTextI18n"})
 public class Round1of2 extends AppCompatActivity {
 
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
+    TextView betweenPlayersName;
     int currentPlayer = 0;
     static ArrayList<int[]> troublemakerQue = new ArrayList<>();
     static ArrayList<int[]> robberQue = new ArrayList<>();
     static ArrayList<int[]> drunkQue = new ArrayList<>();
-    static String[] postDoppelUnusedRoles; // Like unused roles but changes for Doppel-Drunk
+    static String[] postDoppelUnusedRoles = new String[3]; // Like unused roles but changes for Doppel-Drunk
     static String doppelCharacter = "#"; // To change this there are 2 places in CharacterSelect you need to change too
 
     @Override
@@ -39,14 +46,15 @@ public class Round1of2 extends AppCompatActivity {
         robberQue = new ArrayList<>();
         drunkQue = new ArrayList<>();
 
-        postDoppelUnusedRoles = CharacterSelect.unusedRoles;
+        System.arraycopy(unusedRoles,0,postDoppelUnusedRoles,0, unusedRoles.length); // Sets up postDoppelUnusedRoles without pointers
         playerNameTextView = findViewById(R.id.playerName);
         roleTextView = findViewById(R.id.role);
         explanationTextView = findViewById(R.id.explanation);
 
-//        generateView();
-        setContentView(R.layout.round_1_reveal);
-        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
+        setContentView(R.layout.between_players);
+        betweenPlayersName = findViewById(R.id.between_players_name); // The text view for between player turns
+        betweenPlayersName.setText(players[currentPlayer].name);
+        Log.e("NAME","Player "+currentPlayer+": "+ players[currentPlayer].name);
 
         if (MainActivity.smallScreen) {
             scaleForSmallScreen();
@@ -58,9 +66,9 @@ public class Round1of2 extends AppCompatActivity {
      */
     void generateView()
     {
-        String role = removeDoppelChar(MainActivity.players[currentPlayer].preDoppel);
-        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
-        roleTextView.setText(role);
+        String role = removeDoppelChar(players[currentPlayer].preDoppel);
+        playerNameTextView.setText(players[currentPlayer].name);
+        roleTextView.setText(replaceDoppelChar(players[currentPlayer].preDoppel));
         switch (role) {
             case "Doppelganger":
                 generateDoppelganger();
@@ -97,13 +105,12 @@ public class Round1of2 extends AppCompatActivity {
     class doneClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            if (currentPlayer+1!=MainActivity.players.length) {
+            if (currentPlayer+1!= players.length) {
                 remove();
                 currentPlayer++;
-//                generateView();
-                setContentView(R.layout.round_1_reveal);
-                TextView playerName = findViewById(R.id.playerName);
-                playerName.setText(MainActivity.players[currentPlayer].name);
+                setContentView(R.layout.between_players);
+                betweenPlayersName = findViewById(R.id.between_players_name);
+                betweenPlayersName.setText(players[currentPlayer].name);
             }
             else {
                 doRound1Switch();
@@ -119,7 +126,7 @@ public class Round1of2 extends AppCompatActivity {
         @Override
         public void onClick(View view)
         {
-            switch (MainActivity.players[currentPlayer].postDoppel) {
+            switch (removeDoppelChar(players[currentPlayer].postDoppel)) {
                 case "Seer":
                     // First checks whether, if the buttons are togglebuttons, one or two have been clicked
                     int numChecked = 0;
@@ -145,11 +152,11 @@ public class Round1of2 extends AppCompatActivity {
                     break;
                 case "Drunk":
                     // Doppel-Drunk
-                    if (removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Doppelganger")) {
-                        String newRole = CharacterSelect.unusedRoles[view.getId()]; // your new role
-                        CharacterSelect.unusedRoles[view.getId()] = MainActivity.players[currentPlayer].originalRole; // Put your role in the middle
-                        postDoppelUnusedRoles[view.getId()] = MainActivity.players[currentPlayer].originalRole; // Also do so for the seer
-                        MainActivity.players[view.getId()].setPostDoppel(newRole); // Set your postDoppel roles to the center role
+                    if (removeDoppelChar(players[currentPlayer].originalRole).equals("Doppelganger")) {
+                        String newRole = unusedRoles[view.getId()]; // your new role
+                        unusedRoles[view.getId()] = players[currentPlayer].originalRole; // Put your role in the middle
+                        postDoppelUnusedRoles[view.getId()] = players[currentPlayer].originalRole; // Also do so for the seer/lone wolf
+                        players[view.getId()].setPostDoppel(newRole); // Set your postDoppel roles to the center role
                     }
                     // Regular Drunk
                     else {
@@ -166,6 +173,8 @@ public class Round1of2 extends AppCompatActivity {
                     showInfo("You saw: " + roleSeen);
                     generateDoneButton();
                     break;
+                default:
+                    Log.e("WARNING UNUSEDROLE","Role: "+players[currentPlayer].postDoppel);
             }
         }
     }
@@ -180,13 +189,13 @@ public class Round1of2 extends AppCompatActivity {
             // Inline if for setting value used for this (Type varName = condition ? if true : if false;)
             int adjust = view.getId() >= currentPlayer ?  1 : 0;
             // For Robber
-            if (removeDoppelChar(MainActivity.players[currentPlayer].preDoppel).equals("Robber")) {
+            if (removeDoppelChar(players[currentPlayer].preDoppel).equals("Robber")) {
 
                 // If Doppel-Robber
-                if (removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Doppelganger")) {
-                    String tempRole = MainActivity.players[currentPlayer].preDoppel; // Temp variable to hold doppel's role
-                    MainActivity.players[currentPlayer].setPostDoppel(MainActivity.players[view.getId()+adjust].preDoppel); // Sets doppel's roles to their role
-                    MainActivity.players[view.getId()+adjust].setPostDoppel(tempRole); // Sets their roles to your role (using temp var)
+                if (removeDoppelChar(players[currentPlayer].originalRole).equals("Doppelganger")) {
+                    String tempRole = players[currentPlayer].preDoppel; // Temp variable to hold doppel's role
+                    players[currentPlayer].setPostDoppel(players[view.getId()+adjust].preDoppel); // Sets doppel's roles to their role
+                    players[view.getId()+adjust].setPostDoppel(tempRole); // Sets their roles to your role (using temp var)
                 }
                 // Regular Robber
                 else {
@@ -199,19 +208,19 @@ public class Round1of2 extends AppCompatActivity {
                 generateDoneButton();
             }
             // For doppelgangers who haven't done anything yet
-            else if (removeDoppelChar(MainActivity.players[currentPlayer].preDoppel).equals("Doppelganger")) {
-                MainActivity.players[currentPlayer].setPreDoppel(doppelCharacter+MainActivity.players[view.getId()+adjust].originalRole);
+            else if (removeDoppelChar(players[currentPlayer].preDoppel).equals("Doppelganger")) {
+                players[currentPlayer].setPreDoppel(doppelCharacter+ players[view.getId()+adjust].originalRole);
                 removePlayerButtons();
                 generateView();
             }
             // Troublemaker
-            else if (removeDoppelChar(MainActivity.players[currentPlayer].preDoppel).equals("Troublemaker")) {
+            else if (removeDoppelChar(players[currentPlayer].preDoppel).equals("Troublemaker")) {
 
                 // Both troublemaker sections first:
                 // Checks how many buttons are selected, and puts them in a list
                 int[] tempIntArray = new int[2];
                 int numSelected = 0;
-                for (int i = 0; i < MainActivity.players.length - 1; i++) {
+                for (int i = 0; i < players.length - 1; i++) {
                     adjust = i >= currentPlayer ?  1 : 0;
                     if (((ToggleButton) findViewById(i)).isChecked()) {
                         tempIntArray[numSelected] = i + adjust;
@@ -222,9 +231,9 @@ public class Round1of2 extends AppCompatActivity {
                 // Nothing happens until two buttons are selected
                 if (numSelected == 2) {
                     // Doppel-Troublemaker
-                    if (removeDoppelChar(MainActivity.players[currentPlayer].originalRole).equals("Doppelganger")) {
-                        MainActivity.players[tempIntArray[0]].setPostDoppel(MainActivity.players[tempIntArray[1]].originalRole);
-                        MainActivity.players[tempIntArray[1]].setPostDoppel(MainActivity.players[tempIntArray[0]].originalRole);
+                    if (removeDoppelChar(players[currentPlayer].originalRole).equals("Doppelganger")) {
+                        players[tempIntArray[0]].setPostDoppel(players[tempIntArray[1]].originalRole);
+                        players[tempIntArray[1]].setPostDoppel(players[tempIntArray[0]].originalRole);
                     }
                     // Regular Troublemaker
                     else {
@@ -255,17 +264,17 @@ public class Round1of2 extends AppCompatActivity {
 
     void doRound1Switch() {
         for (int[] robberAction : robberQue) {
-            MainActivity.players[robberAction[0]].setPostRobber(MainActivity.players[robberAction[1]].postDoppel);
-            MainActivity.players[robberAction[1]].setPostRobber(MainActivity.players[robberAction[0]].postDoppel);
+            players[robberAction[0]].setPostRobber(players[robberAction[1]].postDoppel);
+            players[robberAction[1]].setPostRobber(players[robberAction[0]].postDoppel);
         }
         for (int[] troublemakerAction : troublemakerQue) {
-            MainActivity.players[troublemakerAction[0]].setPostTrouble(MainActivity.players[troublemakerAction[1]].postRobber);
-            MainActivity.players[troublemakerAction[1]].setPostTrouble(MainActivity.players[troublemakerAction[0]].postRobber);
+            players[troublemakerAction[0]].setPostTrouble(players[troublemakerAction[1]].postRobber);
+            players[troublemakerAction[1]].setPostTrouble(players[troublemakerAction[0]].postRobber);
         }
         for (int[] drunkAction : drunkQue) {
             // Order is important here, unlike the robber or troublemaker
-            MainActivity.players[drunkAction[0]].setPostDrunk(CharacterSelect.unusedRoles[drunkAction[1]]);
-            CharacterSelect.unusedRoles[drunkAction[1]] = MainActivity.players[drunkAction[0]].postTrouble;
+            players[drunkAction[0]].setPostDrunk(unusedRoles[drunkAction[1]]);
+            unusedRoles[drunkAction[1]] = players[drunkAction[0]].postTrouble;
         }
     }
 
@@ -302,15 +311,15 @@ public class Round1of2 extends AppCompatActivity {
         showPlayerButtons();
     }
     void generateDrunk() { // Need doppel-drunk in case seer looks in middle
-        explanationTextView.setText("Choose a card from the center.");
+        explanationTextView.setText("Switch with an unused role.");
         showUnusedRoleButtons();
-        generateDoneButton();
+//        generateDoneButton();
     }
     void showInfo(String info) {
         View view = findViewById(R.id.round_1);
         TextView tempAddTextView = new TextView(this);
         tempAddTextView.setText(info);
-        tempAddTextView.setId(100);
+        tempAddTextView.setId(INFO_ID);
         if (MainActivity.smallScreen) {
             tempAddTextView.setTextSize(25);
         }
@@ -369,11 +378,11 @@ public class Round1of2 extends AppCompatActivity {
         int height = displayMetrics.heightPixels;
         int buttonHeight = height/10;
         int j=0; //j is used instead of i to fix the times when we skip the player whose turn it is
-        for(Player player : MainActivity.players)
+        for(Player player : players)
         {
-            if (player!=MainActivity.players[currentPlayer]) {
+            if (player!= players[currentPlayer]) {
                 Button tempAddButton = new Button(this);
-                if (removeDoppelChar(MainActivity.players[currentPlayer].postDoppel).equals("Troublemaker")) {
+                if (removeDoppelChar(players[currentPlayer].postDoppel).equals("Troublemaker")) {
                     tempAddButton = new ToggleButton(this);
                     ((ToggleButton) tempAddButton).setTextOn(player.name + "");
                     ((ToggleButton) tempAddButton).setTextOff(player.name + "");
@@ -412,7 +421,7 @@ public class Round1of2 extends AppCompatActivity {
     }
     void removePlayerButtons() {
         View view = findViewById(R.id.round_1);
-        for(int i = 0; i < MainActivity.players.length; i++) {
+        for(int i = 0; i < players.length; i++) {
             ((RelativeLayout) view).removeView(findViewById(i));
         }
     }
