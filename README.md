@@ -10,5 +10,6 @@ To play, start by inputting the names of your group, preferably in the order you
 
 The app keeps the functionality of the night phase exactly, so it is the exact same game as with the cards.
 
-Role select made primarily by Maxfojtik
-Everything else made primarily by mdzirbel
+This app was made my mdzirbel and Maxfojtik for fun.
+Role select made primarily by Maxfojtik.
+Everything else made primarily by mdzirbel.
