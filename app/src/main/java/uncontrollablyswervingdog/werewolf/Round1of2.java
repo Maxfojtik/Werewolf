@@ -174,7 +174,7 @@ public class Round1of2 extends AppCompatActivity {
                     generateDoneButton();
                     break;
                 default:
-                    Log.e("WARNING UNUSEDROLE","Role: "+players[currentPlayer].postDoppel);
+                    Log.e("WARNING UNUSED ROLE","Role: "+players[currentPlayer].postDoppel);
             }
         }
     }

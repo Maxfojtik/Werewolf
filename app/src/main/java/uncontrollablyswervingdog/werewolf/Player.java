@@ -17,6 +17,8 @@ originalRole - everything
 
  */
 
+@SuppressWarnings("WeakerAccess") // Suppresses access can be private warnings
+
 public class Player {
     String name;
     String originalRole;

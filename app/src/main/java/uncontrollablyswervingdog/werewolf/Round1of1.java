@@ -1,7 +1,6 @@
 package uncontrollablyswervingdog.werewolf;
 
 
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+
+import static uncontrollablyswervingdog.werewolf.MainActivity.players;
+
+//TODO make troublemaker display who you switched
 
 @SuppressLint({"ResourceType","SetTextI18n"})
 public class Round1of1 extends AppCompatActivity {
@@ -24,10 +27,31 @@ public class Round1of1 extends AppCompatActivity {
     TextView playerNameTextView;
     TextView roleTextView;
     TextView explanationTextView;
+    TextView betweenPlayersName;
     int currentPlayer = 0;
-    LinkedList<int[]> robberQue = new LinkedList<>();
-    LinkedList<int[]> troublemakerQue = new LinkedList<>();
-    LinkedList<int[]> drunkQue = new LinkedList<>();
+    ArrayList<int[]> robberQue = new ArrayList<>();
+    ArrayList<int[]> troublemakerQue = new ArrayList<>();
+    ArrayList<int[]> drunkQue = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // Set the xml file to round_1
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.round_1);
+
+        // Initialize the text views in the round_1 xml file for editing later
+        playerNameTextView = findViewById(R.id.playerName);
+        roleTextView = findViewById(R.id.role);
+        explanationTextView = findViewById(R.id.explanation);
+
+        setContentView(R.layout.between_players);
+        betweenPlayersName = findViewById(R.id.between_players_name); // The text view for between player turns
+        betweenPlayersName.setText(players[currentPlayer].name);
+
+        if (MainActivity.smallScreen) {
+            scaleForSmallScreen();
+        }
+    }
 
     /**
      * Counts the roles of a type
@@ -44,30 +68,6 @@ public class Round1of1 extends AppCompatActivity {
         return total;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // Set the xml file to round_1
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.round_1);
-
-        // Initialize the text views in the round_1 xml file for editing later
-        playerNameTextView = findViewById(R.id.playerName);
-        roleTextView = findViewById(R.id.role);
-        explanationTextView = findViewById(R.id.explanation);
-
-        generateView();
-        setContentView(R.layout.between_players);
-        if (MainActivity.players[currentPlayer].name.equals("")) {
-            MainActivity.players[currentPlayer].name = "Player 1";
-        }
-        playerNameTextView.setText(MainActivity.players[currentPlayer].name);
-
-        if (MainActivity.smallScreen) {
-            scaleForSmallScreen();
-        }
-
-    }
-
     /**
      * Changes the values of a couple sizes so it fits on a smaller screen better
      */
@@ -78,7 +78,6 @@ public class Round1of1 extends AppCompatActivity {
         params.topMargin = 10;
     }
 
-
     /**
      * Button listener for finishing someone's turn. This decides what to do
      */
@@ -86,12 +85,11 @@ public class Round1of1 extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             if (currentPlayer+1!=MainActivity.players.length) { // Ensures it's not the last player
-//                remove(); // I'm not sure why this was here. Maybe it's important?
+                remove();
                 currentPlayer++;
-                generateView();
                 setContentView(R.layout.between_players);
-                TextView playerName = findViewById(R.id.playerName);
-                playerName.setText(MainActivity.players[currentPlayer].name);
+                betweenPlayersName = findViewById(R.id.between_players_name);
+                betweenPlayersName.setText(players[currentPlayer].name);
             }
             else {
                 doSwitch();
@@ -167,7 +165,7 @@ public class Round1of1 extends AppCompatActivity {
                     break;
 
                 case "Drunk":
-                    drunkQue.add(new int[]{view.getId(), currentPlayer});
+                    queSwitch("Drunk", currentPlayer, view.getId());
                     removeUnusedRoleButtons();
                     showInfo("You switched with role " + ((view.getId()) + 1));
                     generateDoneButton();
@@ -198,6 +196,9 @@ public class Round1of1 extends AppCompatActivity {
                     queSwitch("Robber", currentPlayer, (view.getId()) + adjust);
 
                     removePlayerButtons();
+
+                    // TODO display "you switched x and y"
+
                     generateDoneButton();
                     break;
 
@@ -278,10 +279,6 @@ public class Round1of1 extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(15,0,15,15);
     }
-//    void remove() { // I'm pretty sure this isn't needed but may as well keep it until testing
-//        removeInfo();
-//        removePlayerButtons();
-//    }
 
     /**
      * Makes the text and options for the role
@@ -439,6 +436,14 @@ public class Round1of1 extends AppCompatActivity {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tempAddTextView.getLayoutParams();
         params.addRule(RelativeLayout.BELOW, R.id.explanation);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    }
+    void removeInfo() {
+        View view = findViewById(R.id.round_1);
+        ((RelativeLayout) view).removeView(findViewById(100));
+    }
+    void remove() {
+        removeInfo();
+        removePlayerButtons();
     }
     void showSeerOptions() {
         View view = findViewById(R.id.round_1);

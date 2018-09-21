@@ -35,6 +35,7 @@ public class DiscussionTimer extends AppCompatActivity {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(updateTimer, 0, 1000);
 
+        // Put the roles that are in the game up
         TextView roles = new TextView(this);
         roles.setId(1);
         roles.setTextSize(18);
@@ -43,7 +44,9 @@ public class DiscussionTimer extends AppCompatActivity {
         roles.setTextColor(Color.rgb(150,150,150));
         StringBuilder roleNames = new StringBuilder("Roles:\n");
         for (Object role : CharacterSelect.usedRoles.keySet().toArray()) {
-            roleNames.append(Round1of2.removeDoppelChar((String) role)).append("\n");
+            for (int i=0;i<CharacterSelect.usedRoles.get(role);i++) {
+                roleNames.append(Round1of2.removeDoppelChar((String) role)).append("\n");
+            }
         }
         roles.setText(roleNames.toString());
         ((RelativeLayout) findViewById(R.id.discussionTimer)).addView(roles);

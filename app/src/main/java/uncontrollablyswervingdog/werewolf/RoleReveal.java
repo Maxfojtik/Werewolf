@@ -27,6 +27,10 @@ public class RoleReveal extends AppCompatActivity {
         }
     }
 
+    // Stops the back button
+    @Override
+    public void onBackPressed() {}
+
     void scaleForSmallScreen() {
         names.setTextSize(25);
         names.setLineSpacing(10f, 1f);

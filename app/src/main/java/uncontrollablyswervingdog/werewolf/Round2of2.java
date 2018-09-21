@@ -231,6 +231,9 @@ public class Round2of2 extends AppCompatActivity {
             case "Tanner":
                 generateTanner();
                 break;
+            case "Katy":
+                generateKaty();
+                break;
             default:
                 generateAlreadyDone();
                 break;
@@ -309,7 +312,7 @@ public class Round2of2 extends AppCompatActivity {
         generateDoneButton();
     }
     void generateInsomniac() {
-        explanationTextView.setText("Your role at the end of the night is "+ players[currentPlayer].finalRole);
+        explanationTextView.setText("Your role at the end of the night is "+ RoleReveal.replaceDoppelChar(players[currentPlayer].finalRole));
         generateDoneButton();
     }
     void generateAlreadyDone() {
@@ -339,6 +342,10 @@ public class Round2of2 extends AppCompatActivity {
         {
             showInfo("You are the only mason :(");
         }
+        generateDoneButton();
+    }
+    void generateKaty() {
+        explanationTextView.setText("You win if nobody votes for you to die");
         generateDoneButton();
     }
     void showInfo(String info) {

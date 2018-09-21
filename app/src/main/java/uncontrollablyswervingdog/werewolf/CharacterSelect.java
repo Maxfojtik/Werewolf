@@ -13,19 +13,27 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @SuppressLint({"ResourceType","SetTextI18n"})
 public class CharacterSelect extends AppCompatActivity
 {
-//    static String[] roles = new String[]{"Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Villager", "Hunter", "Tanner"};
-    static String[] roles = new String[]{"#Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Villager", "Hunter", "Tanner"};
+    static final String[] roles = new String[]{"#Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac",
+            "Villager", "Hunter", "Tanner"};
+
+    // For role amounts, negative numbers indicate that there is no limit, and 0's will not be included in the list
+    static final Map<String, Integer> roleMax = new HashMap<>();
+
     int[] amounts;
     static int numRounds;
     static String[] unusedRoles;
     ScrollView scrollView;
-    RelativeLayout scrollLayout;
-    static HashMap<String, Integer> usedRoles = new HashMap<>(); // For the background in the discussion timer
+    static RelativeLayout scrollLayout;
+    static HashMap<String, Integer> usedRoles = new HashMap<>();
+    Button doneButton;
+    TextView numLeft;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -35,7 +43,23 @@ public class CharacterSelect extends AppCompatActivity
         scrollView = findViewById(R.id.scroll_view);
         scrollLayout = findViewById(R.id.scroll_layout);
 
+        initializeRoleAmounts();
+
         generateStuff();
+    }
+    static void initializeRoleAmounts() {
+        // Negative numbers are unlimited, zero's will not be added to the options, and positive numbers are the cap
+
+        roleMax.put("#Doppelganger", 1);
+        roleMax.put("Robber", 1);
+        roleMax.put("Troublemaker", 1);
+        roleMax.put("Drunk", 1);
+
+        for (String role : roles) {
+            if (!roleMax.containsKey(role)) {
+                roleMax.put(role, -1);
+            }
+        }
     }
     void generateStuff()
     {
@@ -45,88 +69,85 @@ public class CharacterSelect extends AppCompatActivity
         amounts = new int[roles.length];
         for(int i = 0; i < roles.length; i++)
         {
-            amounts[i] = 0;
-            TextView label = new TextView(this);
-            label.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-            label.setText(Round1of2.removeDoppelChar(roles[i]));
-            label.setId(i+400);
-            if (MainActivity.smallScreen && roles[i].length() > 9) {
-                label.setTextSize(34);
+            if (roleMax.get(roles[i])!= 0) {
+                amounts[i] = 0;
+                TextView label = new TextView(this);
+                label.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                label.setText(Round1of2.removeDoppelChar(roles[i]));
+                label.setId(i + 400);
+                if (MainActivity.smallScreen && roles[i].length() > 9) {
+                    label.setTextSize(34);
+                } else {
+                    label.setTextSize(40);
+                }
+                scrollLayout.addView(label);
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) label.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.topMargin = 5;
+                if (i == 0) {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                } else {
+                    params.addRule(RelativeLayout.BELOW, (i - 1) + 400);
+                }
+                params.leftMargin = 10;
+
+                Button tempSubButton = new Button(this);
+                tempSubButton.setLayoutParams(new RelativeLayout.LayoutParams(width / 10, 50));
+                tempSubButton.setText("-");
+                tempSubButton.setId(i + 200); //add is 100, sub is 200, Number is 300, Label is 400
+
+                scrollLayout.addView(tempSubButton);
+
+                params = (RelativeLayout.LayoutParams) tempSubButton.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+                TextView numberLabel = new TextView(this);
+                numberLabel.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                numberLabel.setText("0");
+                numberLabel.setId(i + 300);
+                numberLabel.setTextSize(40);
+                scrollLayout.addView(numberLabel);
+
+                params = (RelativeLayout.LayoutParams) numberLabel.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_TOP, tempSubButton.getId());
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, tempSubButton.getId());
+                params.addRule(RelativeLayout.LEFT_OF, tempSubButton.getId());
+                params.rightMargin = 15;
+
+                Button tempAddButton = new Button(this);
+                tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width / 10, 50));
+                tempAddButton.setText("+");
+                tempAddButton.setId(i + 100);
+                tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
+                tempSubButton.setOnClickListener(new onClick(numberLabel.getId(), i, -1));
+
+                scrollLayout.addView(tempAddButton);//((RelativeLayout) relLayout).addView(tempAddButton);
+
+                params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
+                params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
+                params.rightMargin = 15;
             }
-            else {
-                label.setTextSize(40);
-            }
-            scrollLayout.addView(label);//((RelativeLayout) relLayout).addView(label);
-
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) label.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            params.topMargin = 5;
-            if (i == 0) {
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            }else {
-                params.addRule(RelativeLayout.BELOW, (i-1)+400);
-            }
-            params.leftMargin = 10;
-
-            Button tempSubButton = new Button(this);
-            tempSubButton.setLayoutParams(new RelativeLayout.LayoutParams(width/10, 50));
-            tempSubButton.setText("-");
-            tempSubButton.setId(i+200); //add is 100, sub is 200, Number is 300, Label is 400
-
-            scrollLayout.addView(tempSubButton);//((RelativeLayout) relLayout).addView(tempSubButton);
-
-            params = (RelativeLayout.LayoutParams) tempSubButton.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-            TextView numberLabel = new TextView(this);
-            numberLabel.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-            numberLabel.setText("0");
-            numberLabel.setId(i+300);
-            numberLabel.setTextSize(40);
-            scrollLayout.addView(numberLabel);//((RelativeLayout) relLayout).addView(numberLabel);
-
-            params = (RelativeLayout.LayoutParams) numberLabel.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_TOP, tempSubButton.getId());
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, tempSubButton.getId());
-            params.addRule(RelativeLayout.LEFT_OF, tempSubButton.getId());
-            params.rightMargin = 15;
-
-            Button tempAddButton = new Button(this);
-            tempAddButton.setLayoutParams(new RelativeLayout.LayoutParams(width/10, 50));
-            tempAddButton.setText("+");
-            tempAddButton.setId(i+100);
-            tempAddButton.setOnClickListener(new onClick(numberLabel.getId(), i, 1));
-            tempSubButton.setOnClickListener(new onClick(numberLabel.getId(), i, -1));
-
-            scrollLayout.addView(tempAddButton);//((RelativeLayout) relLayout).addView(tempAddButton);
-
-            params = (RelativeLayout.LayoutParams) tempAddButton.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_TOP, label.getId());
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, label.getId());
-            params.addRule(RelativeLayout.LEFT_OF, numberLabel.getId());
-            params.rightMargin = 15;
         }
-        Button doneButton = new Button(this);
+        doneButton = new Button(this);
         doneButton.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         doneButton.setText("Done");
-        doneButton.setId(500);
         doneButton.setVisibility(View.INVISIBLE);
         doneButton.setOnClickListener(new doneClick());
-        scrollLayout.addView(doneButton);//((RelativeLayout) relLayout).addView(doneButton);
+        scrollLayout.addView(doneButton);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) doneButton.getLayoutParams();
-//        params.addRule(RelativeLayout.ALIGN_RIGHT, (roles.length-1)+200);
-//        params.addRule(RelativeLayout.ALIGN_LEFT, (roles.length-1)+400);
         params.addRule(RelativeLayout.BELOW, roles.length + 399);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, R.id.charSelect);
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.charSelect);
         params.topMargin = 10;
 
-        TextView numLeft = new TextView(this);
+        numLeft = new TextView(this);
         numLeft.setTextSize(30);
-        numLeft.setId(1+500);
         numLeft.setLayoutParams(new RelativeLayout.LayoutParams(width-30, RelativeLayout.LayoutParams.WRAP_CONTENT));
         numLeft.setText(MainActivity.players.length+3+"");
         numLeft.setGravity(Gravity.CENTER);
@@ -161,6 +182,7 @@ public class CharacterSelect extends AppCompatActivity
                 }
             }
             numRounds = checkNumRounds(availableRoles);
+            usedRoles = new HashMap<>();
             usedRoles.putAll(availableRoles); // For the background in the discussion timer
             while(assignedNumber!=numPlayers)
             {
@@ -219,8 +241,8 @@ public class CharacterSelect extends AppCompatActivity
     }
     class onClick implements View.OnClickListener
     {
-        int index = 0;
-        int idOfText = 0;
+        int index;
+        int idOfText;
         int changeBy;
         public onClick(int id, int index, int changeBy)
         {
@@ -229,34 +251,55 @@ public class CharacterSelect extends AppCompatActivity
             idOfText = id;
         }
         @Override
-        public void onClick(View V)
+        public void onClick(View v)
         {
-            int total = 0;
+            int total = 0; // Amount of roles selected
             for (int amount : amounts) {
                 total += amount;
             }
-            if(total<MainActivity.players.length+3 || changeBy==-1)
+            if (total==MainActivity.players.length+3 && changeBy!=-1){
+                disablePlusButtons();
+            }
+            else
             {
+                enablePlusButtons();
                 TextView label = findViewById(idOfText);
                 amounts[index] += changeBy;
+
+                if (roleMax.get(roles[index])>0 && roleMax.get(roles[index])==amounts[index]) { // If there is a max and it is reached
+                    disablePlusButton(index);
+                }
                 if (amounts[index] < 0) {
                     amounts[index] = 0;
                     return;
                 }
                 label.setText(String.valueOf(amounts[index]));
                 total += changeBy;
-                ((TextView) findViewById(500+1)).setText((MainActivity.players.length+3-total)+"");
+                numLeft.setText((MainActivity.players.length+3-total)+"");
                 if(total==MainActivity.players.length+3)
                 {
-                    findViewById(500).setVisibility(View.VISIBLE);
-                    findViewById(501).setVisibility(View.INVISIBLE);
+                    doneButton.setVisibility(View.VISIBLE);
+                    numLeft.setVisibility(View.INVISIBLE);
                 }
                 else
                 {
-                    findViewById(500).setVisibility(View.INVISIBLE);
-                    findViewById(501).setVisibility(View.VISIBLE);
+                    doneButton.setVisibility(View.INVISIBLE);
+                    numLeft.setVisibility(View.VISIBLE);
                 }
             }
+        }
+    }
+    static void disablePlusButtons() {
+        for (int i=0; i<roles.length;i++) {
+            disablePlusButton(i);
+        }
+    }
+    static void disablePlusButton(int buttonIndex) {
+        (scrollLayout.findViewById(buttonIndex+100)).setEnabled(false);
+    }
+    static void enablePlusButtons() {
+        for (int i=0; i<roles.length;i++) {
+            (scrollLayout.findViewById(i+100)).setEnabled(true);
         }
     }
     static int checkNumRounds(HashMap<String, Integer> availableRoles)
