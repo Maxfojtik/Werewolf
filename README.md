@@ -13,3 +13,5 @@ The app keeps the functionality of the night phase exactly, so it is the exact s
 This app was made my mdzirbel and Maxfojtik for fun.
 Role select made primarily by Maxfojtik.
 Everything else made primarily by mdzirbel.
+
+Download it here on the <a href="https://play.google.com/store/apps/details?id=mdzirbel.werewolf">play store</a>.
