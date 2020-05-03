@@ -20,8 +20,8 @@
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="voteCountdown"
-        android:text="vote now"
+        android:onClick="voteNowButton"
+        android:text="@string/vote_now_button_text"
         android:layout_marginBottom="100dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />

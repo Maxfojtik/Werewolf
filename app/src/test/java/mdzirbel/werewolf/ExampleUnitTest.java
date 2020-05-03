@@ -1,4 +1,4 @@
-package uncontrollablyswervingdog.werewolf;
+package mdzirbel.werewolf;
 
 import org.junit.Test;
 

@@ -2,6 +2,9 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/about"
-        android:title="@string/about" />
+        android:id="@+id/credits"
+        android:title="@string/credits" />
+    <item
+        android:id="@+id/rules"
+        android:title="@string/rules_menu_text" />
 </menu>

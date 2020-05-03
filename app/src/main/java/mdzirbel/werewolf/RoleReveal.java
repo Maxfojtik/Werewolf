@@ -1,4 +1,4 @@
-package uncontrollablyswervingdog.werewolf;
+package mdzirbel.werewolf;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,12 +9,15 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import static mdzirbel.werewolf.Reference.players;
+import static mdzirbel.werewolf.Reference.unusedRoles;
+
 @SuppressLint({"ResourceType","SetTextI18n"})
 public class RoleReveal extends AppCompatActivity {
 
     TextView names;
     TextView roles;
-    TextView unusedRoles;
+    TextView unusedRolesText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,15 +25,14 @@ public class RoleReveal extends AppCompatActivity {
         setContentView(R.layout.role_reveal);
         showRoles();
         showUnusedRoles();
-        if (MainActivity.smallScreen) {
+        tryScaleForSmallScreen();
+    }
+
+    void tryScaleForSmallScreen() {
+        if (Reference.smallScreen) {
             scaleForSmallScreen();
         }
     }
-
-    // Stops the back button
-    @Override
-    public void onBackPressed() {}
-
     void scaleForSmallScreen() {
         names.setTextSize(25);
         names.setLineSpacing(10f, 1f);
@@ -44,7 +46,7 @@ public class RoleReveal extends AppCompatActivity {
         params.topMargin = 12;
         params.rightMargin = 12;
 
-        unusedRoles.setTextSize(20);
+        unusedRolesText.setTextSize(20);
     }
 
     void showRoles() {
@@ -55,46 +57,46 @@ public class RoleReveal extends AppCompatActivity {
         names.setGravity(Gravity.START);
         names.setLineSpacing(40f, 1f);
         StringBuilder playerNames = new StringBuilder();
-        for (int i=0; i<MainActivity.players.length;i++) {
-            playerNames.append(MainActivity.players[i].name).append("\n");
+        for (Player player : players) {
+            playerNames.append(player.name).append("\n");
         }
         names.setText(playerNames.toString());
         ((RelativeLayout) findViewById(R.id.roles_scroll)).addView(names);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) names.getLayoutParams();
         params.topMargin = 60;
-        params.leftMargin = 60;
+        params.leftMargin = 30;
 
         roles = new TextView(this);
         roles.setId(1);
         roles.setTextSize(30);
         roles.setGravity(Gravity.END);
         roles.setLineSpacing(40f, 1f);
-        StringBuilder roleNames = new StringBuilder("");
-        for (int i=0; i<MainActivity.players.length;i++) {
-            roleNames.append(replaceDoppelChar(MainActivity.players[i].finalRole)).append("\n");
+        StringBuilder roleNames = new StringBuilder();
+        for (Player player : players) {
+            roleNames.append(player.finalRole.getWholeRoleForPrinting()).append("\n");
         }
         roles.setText(roleNames.toString());
         ((RelativeLayout) findViewById(R.id.roles_scroll)).addView(roles);
         params = (RelativeLayout.LayoutParams) roles.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params.topMargin = 60;
-        params.rightMargin = 60;
+        params.rightMargin = 30;
     }
 
     void showUnusedRoles() {
         View view = findViewById(R.id.roleReveal);
 
-        unusedRoles = new TextView(this);
-        unusedRoles.setId(10);
-        unusedRoles.setTextSize(25);
-        unusedRoles.setGravity(Gravity.CENTER);
+        unusedRolesText = new TextView(this);
+        unusedRolesText.setId(10);
+        unusedRolesText.setTextSize(25);
+        unusedRolesText.setGravity(Gravity.CENTER);
         StringBuilder unused = new StringBuilder();
-        for (String role : CharacterSelect.unusedRoles) {
-            unused.append(replaceDoppelChar(role)).append(" ");
+        for (Role role : unusedRoles.finalUnusedRoles) {
+            unused.append(role.getWholeRoleForPrinting()).append(" ");
         }
-        unusedRoles.setText(unused.toString());
-        ((RelativeLayout) view).addView(unusedRoles);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) unusedRoles.getLayoutParams();
+        unusedRolesText.setText(unused.toString());
+        ((RelativeLayout) view).addView(unusedRolesText);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) unusedRolesText.getLayoutParams();
         params.addRule(RelativeLayout.ABOVE, R.id.restartButton);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
     }
@@ -104,11 +106,9 @@ public class RoleReveal extends AppCompatActivity {
         startActivity(intent);
     }
 
-    static String replaceDoppelChar(String s) {
-        if (s.equals("#Doppelganger")) {
-            return "Doppelganger";
-        }
-        return s.replace("#","Doppel-");
-    }
+    // Stops the back button
+    @Override
+    public void onBackPressed() {}
+
 }
 

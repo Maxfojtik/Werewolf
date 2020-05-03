@@ -1,4 +1,4 @@
-package uncontrollablyswervingdog.werewolf;
+package mdzirbel.werewolf;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("uncontrollablyswervingdog.werewolf", appContext.getPackageName());
+        assertEquals("mdzirbel.werewolf", appContext.getPackageName());
     }
 }

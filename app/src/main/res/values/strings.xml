@@ -1,4 +1,93 @@
 <resources>
+<!--APP GENERAL-->
     <string name="app_name">One Night Cardless</string>
-    <string name="about">About</string>
+    <string name="credits">Credits</string>
+    <string name="rules_menu_text">Rules</string>
+    <string name="rulesHeader">Rules:</string>
+<!--BUTTON TEXT-->
+    <string name="vote_now">Vote Now</string>
+    <string name="vote_in">Vote In:</string>
+    <string name="done">Done</string>
+    <string name="players">players</string>
+<!-- BASE GAME ROLE EXPLANATIONS-->
+    <string name="werewolf_explanation">You see the other werewolves. If you\'re alone, see an unused role.</string>
+    <string name="seer_explanation">You see another player\'s role or two unused roles.</string>
+    <string name="robber_explanation">Take and view someone else\'s role and give them your own.</string>
+    <string name="troublemaker_explanation">Change cards between two other players.</string>
+    <string name="minion_explanation">You see who the werewolves are</string>
+    <string name="villager_explanation">You do nothing at night.</string>
+    <string name="hunter_explanation">The person you vote for also dies if you are killed.</string>
+    <string name="tanner_explanation">You hate your job and your life. You only win if you die.</string>
+    <string name="drunk_explanation">Choose a card from the center.</string>
+    <string name="mason_explanation">You see the other mason, if there is one.</string>
+    <string name="insomniac_explanation">You see your role at the end of the night, after all role switches</string>
+    <string name="doppelganger_explanation">You copy a player\'s role and do their action</string>
+<!-- DAYBREAK ROLE EXPLANATIONS -->
+    <string name="sentinel_explanation">Prevent a player\'s role from being interacted with by other roles</string>
+    <string name="alpha_wolf_explanation">Replace a non-werewolf\'s role with a werewolf role</string>
+    <string name="mystic_wolf_explanation">See one of the unused roles</string>
+    <string name="apprentice_seer_explanation">See one of the unused roles</string>
+    <string name="pi_explanation">You may look at up to two other player\'s cards. If you see a werewolf or tanner, you become that role</string>
+    <string name="witch_explanation">You may look at one of the center cards. If you do, you must exchange it with any player\'s card</string>
+    <string name="village_idiot_explanation">You may move all player\'s cards but your own to the left or right</string>
+    <string name="revealer_explanation">You may flip any other player\'s card face up. If it is a werewolf or tanner, flip it back over</string>
+    <string name="curator_explanation">You may give any player an artifact token</string>
+    <string name="dream_wolf_explanation">You do not wake up during the night but the werewolves know who you are</string>
+    <string name="bodyguard_explanation">The player you vote for cannot be killed</string>
+
+<!--GENERIC NIGHT-->
+    <string name="action_later_text">You will do your action later</string>
+    <string name="already_did_role">You already did your role</string>
+    <string name="other_masons_text">The other masons are:\u0020</string>
+    <string name="other_mason_text">The other mason is:\u0020</string>
+    <string name="insomniac_text">Your role at the end of the night is:\u0020</string>
+
+    <string name="player_roles">Player Roles</string>
+    <string name="unused_roles">Unused Roles</string>
+    <string name="role">Role</string>
+    <string name="default_name_text">[Name]</string>
+    <string name="default_role_text">[Role]</string>
+    <string name="default_explanation_text">[Explanation]</string>
+    <string name="ready">Ready</string>
+    <string name="developed_by">App developed by: Matthew Zirbel and Max Fojtik</string>
+    <string name="see_what_you_stole_later">You will see what you stole in the next round</string>
+    <string name="vote_now_button_text">vote now</string>
+    <string name="no_werewolves_text">There are no werewolves</string>
+    <string name="you_stole_text">You stole:\u0020</string>
+    <string name="sentineld_on_text">Used Sentinel action on: </string>
+
+    <string name="rules">
+        <h2>Rules:</h2>
+        One Night Cardless removes the need for cards and shortens the night phase relative to the usual One Night Werewolf.
+        <br/> This app replaces the night phase and One Night app while keeping the exact same functionality.
+        <br/><br/>
+
+        One Night Werewolf Rules can be found <a href="https://www.fgbradleys.com/rules/rules2/OneNightUltimateWerewolf-rules.pdf">here</a><br/>
+        Daybreak rules can be found <a href="https://www.fgbradleys.com/rules/rules2/OneNightUltimateWerewolfDaybreak-rules.pdf">here</a>
+        <br/><br/>
+
+        <h2>App Specific Rules:</h2>
+
+        Start by inputting the names of your group, preferably in the order you are sitting, and hit Done. If you don\'t input names, it will autofill with Player #.
+        <br/><br/>
+
+        Next, select the roles you want.
+        <br/><br/>
+
+        Then, pass the phone to the person whose name appears, which will happen in the order they were added. Once the person whose name is shown has the app,
+        they click READY to take their action. The app will prompt them with a brief description of the role, although general knowledge of One Night Werewolf is
+        assumed. After taking your role\'s action, click done and pass it to the next player.
+        <br/><br/>
+
+        The app may require different numbers of times passing around depending on the roles selected, in order to ensure it is true to the original game.
+        If you are playing with the Doppelganger, Insomniac, or Revealer you will pass the phone around twice, otherwise the night phase will require one pass.
+        The Sentinel adds one pass to the above number, and having both the Sentinel and Doppelganger will take 4 passes
+        <br/><br/>
+
+        After the phone has been passed around it will start a 5 minute timer, for the day phase. After the day phase is the vote, and then the phone will display
+        every player\'s name next to their role, and the unused roles at the bottom.
+        <br/><br/>
+        <br/><br/>
+        </string>
+
 </resources>

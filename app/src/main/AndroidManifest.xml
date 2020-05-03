@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uncontrollablyswervingdog.werewolf">
+    package="mdzirbel.werewolf">
 
     <application
         android:allowBackup="true"
@@ -16,13 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CharacterSelect" />
-        <activity android:name=".Round1of1" />
-        <activity android:name=".Round1of2" />
-        <activity android:name=".Round2of2" />
+        <activity android:name=".RoleSelect" />
+        <activity android:name=".Rounds" />
         <activity android:name=".DiscussionTimer" />
         <activity android:name=".RoleReveal" />
-        <activity android:name=".About"></activity>
+        <activity android:name=".Rules" />
+        <activity android:name=".Credits" />
+        <activity android:name=".RoundFunctions" />
+        <activity android:name=".RoundListeners" />
+        <activity android:name=".GenerateView" />
     </application>
 
 </manifest>
